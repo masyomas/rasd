@@ -3,7 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منظومة الرصد الذكية لدرجات الطالب - V4</title>
+    <title>منظومة الرصد الذكية لدرجات الطالب</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #1abc9c;
+            --danger: #e74c3c;
+            --success: #27ae60;
+            --bg: #f0f2f5;
+            --card-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منظومة الرصد الذكية لدرجات الطالب</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -22,16 +39,15 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg);
             margin: 0;
-            padding-bottom: 80px; /* لترك مساحة للماركي */
+            padding-bottom: 80px;
             direction: rtl;
             color: #1a202c;
         }
 
-        /* الهيدر */
         .app-header {
             background: var(--primary);
             color: white;
-            padding: 15px 20px;
+            padding: 10px 20px; /* تصغير الهيدر */
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -41,27 +57,15 @@
             z-index: 1000;
         }
 
-        .header-left { display: flex; align-items: center; gap: 12px; }
+        .header-left { display: flex; align-items: center; gap: 10px; }
         
-        .voice-master-btn {
-            background: #4a5568;
-            border: none;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        .voice-master-btn.active { 
-            background: var(--danger); 
-            box-shadow: 0 0 10px rgba(231, 76, 60, 0.5); 
+        /* تصغير حجم العنوان */
+        .app-title {
+            font-weight: 800;
+            font-size: 1.05rem; 
+            margin: 0;
         }
 
-        /* التبويبات */
         .tabs {
             display: flex;
             gap: 5px;
@@ -69,20 +73,18 @@
             overflow-x: auto;
             background: white;
             border-bottom: 2px solid #e2e8f0;
-            scrollbar-width: none;
         }
-        .tabs::-webkit-scrollbar { display: none; }
 
         .tab-btn {
-            padding: 12px 20px;
+            padding: 10px 18px;
             border: none;
             background: #edf2f7;
             border-radius: 12px;
             cursor: pointer;
             font-weight: bold;
             white-space: nowrap;
-            transition: 0.3s;
             color: #4a5568;
+            font-size: 0.85rem;
         }
 
         .tab-btn.active { background: var(--accent); color: white; }
@@ -97,7 +99,6 @@
             margin-bottom: 15px;
         }
 
-        /* عناصر الطلاب في الرصد الأسبوعي */
         .student-item {
             background: white;
             border-radius: 10px;
@@ -106,23 +107,17 @@
             border: 1px solid #e2e8f0;
             display: flex;
             flex-direction: column;
-            transition: 0.2s;
         }
-        @media (min-width: 768px) { 
-            .student-item { flex-direction: row; align-items: center; justify-content: space-between; } 
-        }
+        @media (min-width: 768px) { .student-item { flex-direction: row; align-items: center; justify-content: space-between; } }
 
-        .student-name { font-weight: bold; font-size: 1.1rem; color: var(--primary); transition: 0.3s; }
-        .highlight-name { color: #3182ce !important; transform: scale(1.03); transform-origin: right; }
+        .student-name { font-weight: bold; font-size: 1rem; color: var(--primary); transition: 0.2s; }
+        .highlight-name { color: #3182ce !important; transform: scale(1.02); }
 
-        .inputs-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
-        @media (min-width: 768px) { .inputs-row { display: flex; gap: 15px; margin-top: 0; } }
-
-        .input-box { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .input-box label { font-size: 11px; color: #718096; font-weight: bold; }
+        .inputs-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        @media (min-width: 768px) { .inputs-row { display: flex; gap: 15px; } }
 
         .score-input, .grid-input {
-            width: 65px;
+            width: 60px;
             padding: 10px 2px;
             border: 2px solid #e2e8f0;
             border-radius: 8px;
@@ -130,161 +125,110 @@
             font-weight: 900;
             font-size: 1.2rem;
             outline: none;
-            transition: 0.2s;
         }
-        .score-input:focus, .grid-input:focus { 
-            border-color: var(--accent); 
-            background: #f0fff4; 
-            box-shadow: 0 0 5px rgba(26, 188, 156, 0.3);
-        }
+        .score-input:focus, .grid-input:focus { border-color: var(--accent); background: #f0fff4; }
 
-        /* تنسيق الجداول (الشيت الكامل) */
-        .table-scroll { overflow-x: auto; background: white; border-radius: 12px; border: 1px solid #cbd5e0; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        
-        /* الرأس المطلوب: أسود عريض */
+        /* الشيت الكامل - الرأس أسود عريض */
         th { 
             background: #cbd5e0; 
-            color: #000000; 
-            padding: 12px 8px; 
+            color: #000; 
+            padding: 12px 6px; 
             border: 1px solid #a0aec0; 
             white-space: nowrap; 
             text-align: center; 
             font-weight: 900; 
-            font-size: 0.95rem;
         }
-
-        td { padding: 8px 5px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; }
+        td { padding: 8px 4px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; }
         
         .sticky-col {
-            position: sticky; 
-            right: 0; 
-            background: #fff; 
-            z-index: 10;
+            position: sticky; right: 0; background: white; z-index: 10;
             border-left: 3px solid #cbd5e0 !important;
-            min-width: 150px;
         }
 
-        .subtotal-section { background: #ebf8ff !important; color: #2b6cb0; font-weight: 800; }
-        .final-section { background: #f0fff4 !important; color: var(--success); font-size: 1.1rem; }
+        .subtotal-section { background: #ebf8ff !important; color: #2b6cb0; }
+        .final-section { background: #f0fff4 !important; color: var(--success); }
 
-        /* تذييل الصفحة (الماركي) */
         .footer-marquee {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: var(--primary);
-            color: #fff;
-            padding: 10px 0;
-            z-index: 2000;
-            border-top: 2px solid var(--accent);
+            position: fixed; bottom: 0; width: 100%;
+            background: var(--primary); color: white;
+            padding: 8px 0; font-weight: bold; z-index: 1000;
         }
 
-        /* التنبيهات */
+        .table-scroll { overflow-x: auto; border-radius: 12px; border: 1px solid #cbd5e0; }
         #toast {
-            position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%);
-            background: #2d3748; color: white; padding: 12px 25px; border-radius: 25px; display: none; z-index: 3000;
+            position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%);
+            background: #2d3748; color: white; padding: 12px 25px; border-radius: 25px; display: none; z-index: 2000;
         }
-
-        .form-control {
-            width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #e2e8f0;
-            font-family: inherit; outline: none; margin-bottom: 12px; font-size: 1rem;
-        }
-
-        .btn {
-            padding: 12px 20px; border: none; border-radius: 10px; cursor: pointer;
-            font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-success { background: var(--success); color: white; }
-        .btn-danger { background: var(--danger); color: white; }
     </style>
 </head>
 <body>
 
 <div class="app-header">
     <div class="header-left">
-        <i class="fas fa-graduation-cap fa-2x"></i>
-        <span style="font-weight: 900; font-size: 1.2rem;">منظومة الرصد الذكية لدرجات الطالب</span>
+        <i class="fas fa-graduation-cap"></i>
+        <h1 class="app-title">منظومة الرصد الذكية لدرجات الطالب</h1>
     </div>
-    <div style="display:flex; gap:10px;">
-        <button id="masterVoiceBtn" class="voice-master-btn" onclick="toggleGlobalVoice()">
-            <i class="fas fa-microphone-slash"></i> <span>الصوت معطل</span>
-        </button>
-        <button class="btn btn-success" onclick="saveData()">
-            <i class="fas fa-save"></i> حفظ
-        </button>
-    </div>
+    <button class="btn btn-success" style="padding: 8px 15px; border:none; border-radius:8px; cursor:pointer;" onclick="saveData()">
+        <i class="fas fa-save"></i> حفظ البيانات
+    </button>
 </div>
 
 <div class="tabs" id="appTabs" style="display:none;">
-    <button class="tab-btn active" onclick="switchTab('grading')"><i class="fas fa-edit"></i> الرصد الأسبوعي</button>
-    <button class="tab-btn" onclick="switchTab('fullSheet')"><i class="fas fa-table"></i> الشيت الكامل</button>
-    <button class="tab-btn" onclick="switchTab('report')"><i class="fas fa-file-alt"></i> التقرير النهائي</button>
-    <button class="tab-btn" onclick="switchTab('tools')"><i class="fas fa-cog"></i> الأدوات</button>
+    <button class="tab-btn active" onclick="switchTab('grading')">الرصد الأسبوعي</button>
+    <button class="tab-btn" onclick="switchTab('fullSheet')">الشيت الكامل</button>
+    <button class="tab-btn" onclick="switchTab('report')">التقرير الختامي</button>
+    <button class="tab-btn" onclick="switchTab('tools')">الأدوات</button>
 </div>
 
 <div class="container">
     <div id="setup-screen" class="card">
-        <h2 style="text-align:center; color:var(--primary);"><i class="fas fa-tools"></i> إعداد المنظومة</h2>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-            <input type="text" id="subjectName" class="form-control" placeholder="المادة الدراسية (مثل: رياضيات)">
-            <input type="text" id="gradeLevel" class="form-control" placeholder="الصف والفصل (مثل: 1/2)">
-        </div>
-        <input type="text" id="teacherName" class="form-control" placeholder="اسم المعلم">
-        <label style="font-weight:bold; display:block; margin-bottom:5px;">قائمة الأسماء (اسم واحد في كل سطر):</label>
-        <textarea id="namesList" class="form-control" style="height:200px;" placeholder="اكتب أو الصق الأسماء هنا..."></textarea>
-        <button class="btn btn-primary" style="width:100%; font-size:1.2rem;" onclick="initApp()">بدء تشغيل المنظومة</button>
+        <h3><i class="fas fa-cogs"></i> تهيئة النظام</h3>
+        <input type="text" id="subjectName" class="form-control" style="width:100%; padding:12px; margin-bottom:10px; border-radius:8px; border:1px solid #ccc;" placeholder="المادة الدراسية">
+        <input type="text" id="gradeLevel" class="form-control" style="width:100%; padding:12px; margin-bottom:10px; border-radius:8px; border:1px solid #ccc;" placeholder="الصف والفصل">
+        <input type="text" id="teacherName" class="form-control" style="width:100%; padding:12px; margin-bottom:10px; border-radius:8px; border:1px solid #ccc;" placeholder="اسم المعلم">
+        <textarea id="namesList" class="form-control" style="width:100%; height:150px; padding:12px; margin-bottom:10px; border-radius:8px; border:1px solid #ccc;" placeholder="أدخل الأسماء (اسم في كل سطر)"></textarea>
+        <button class="btn btn-primary" style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="initApp()">تشغيل المنظومة</button>
     </div>
 
     <div id="grading-screen" style="display:none;">
-        <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-            <div id="infoDisplay" style="font-weight:bold; color:var(--primary);"></div>
-            <select id="weekSelect" class="form-control" style="width:200px; margin-bottom:0;" onchange="renderStudents()">
-                <optgroup label="الفترة الأولى">
-                    <option value="w1">الأسبوع 1</option><option value="w2">الأسبوع 2</option><option value="w3">الأسبوع 3</option>
-                    <option value="w4">الأسبوع 4</option><option value="w5">الأسبوع 5</option><option value="ex1">اختبار الشهر 1 (30)</option>
-                </optgroup>
-                <optgroup label="الفترة الثانية">
-                    <option value="w6">الأسبوع 6</option><option value="w7">الأسبوع 7</option><option value="w8">الأسبوع 8</option>
-                    <option value="w9">الأسبوع 9</option><option value="w10">الأسبوع 10</option><option value="ex2">اختبار الشهر 2 (30)</option>
-                </optgroup>
-                <optgroup label="نهاية الفصل">
-                    <option value="w11">الأسبوع 11</option><option value="w12">الأسبوع 12</option>
-                </optgroup>
-            </select>
-        </div>
+        <div class="card" id="infoSummary"></div>
+        <select id="weekSelect" class="form-control" style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px;" onchange="renderStudents()">
+            <optgroup label="الفترة الأولى">
+                <option value="w1">الأسبوع 1</option><option value="w2">الأسبوع 2</option><option value="w3">الأسبوع 3</option><option value="w4">الأسبوع 4</option><option value="w5">الأسبوع 5</option>
+                <option value="ex1">اختبار الشهر 1 (30)</option>
+            </optgroup>
+            <optgroup label="الفترة الثانية">
+                <option value="w6">الأسبوع 6</option><option value="w7">الأسبوع 7</option><option value="w8">الأسبوع 8</option><option value="w9">الأسبوع 9</option><option value="w10">الأسبوع 10</option>
+                <option value="ex2">اختبار الشهر 2 (30)</option>
+            </optgroup>
+            <optgroup label="نهاية الفصل">
+                <option value="w11">الأسبوع 11</option><option value="w12">الأسبوع 12</option>
+            </optgroup>
+        </select>
         <div id="studentsContainer"></div>
     </div>
 
     <div id="fullSheet-screen" class="card" style="display:none;">
-        <h3 style="text-align:center; border-bottom:2px solid #eee; padding-bottom:10px;">سجل الدرجات التراكمي (12 أسبوع)</h3>
         <div class="table-scroll" id="fullSheetContainer"></div>
     </div>
 
     <div id="report-screen" class="card" style="display:none;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h3>التقرير الختامي المعتمد</h3>
-            <button class="btn btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> تصدير إكسيل</button>
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+            <h3 style="margin:0;">التقرير الختامي المعتمد</h3>
+            <button class="btn btn-success" style="padding:8px 15px; border:none; border-radius:5px; cursor:pointer;" onclick="exportToExcel()">تصدير إكسيل</button>
         </div>
         <div class="table-scroll" id="reportTableContainer"></div>
     </div>
 
-    <div id="tools-screen" class="card" style="display:none; text-align:center;">
-        <h3>إدارة البيانات</h3>
-        <div style="display:grid; grid-template-columns: 1fr; gap:15px; max-width:400px; margin: 0 auto;">
-            <button class="btn btn-primary" onclick="exportFullData()">تصدير نسخة احتياطية (JSON)</button>
-            <button class="btn btn-success" onclick="document.getElementById('importFile').click()">استيراد نسخة احتياطية</button>
-            <input type="file" id="importFile" style="display:none" accept=".json" onchange="importFullData(this)">
-            <hr>
-            <button class="btn btn-danger" onclick="clearSystem()">حذف كافة البيانات نهائياً</button>
-        </div>
+    <div id="tools-screen" class="card" style="display:none;">
+        <button class="btn btn-primary" style="width:100%; margin-bottom:10px; padding:12px;" onclick="exportFullData()">نسخة احتياطية (JSON)</button>
+        <button class="btn btn-danger" style="width:100%; padding:12px; background:var(--danger); color:white; border:none; border-radius:8px;" onclick="clearSystem()">حذف كافة البيانات</button>
     </div>
 </div>
 
 <div class="footer-marquee">
     <marquee behavior="scroll" direction="right">
-        تصميم وبرمجة الأستاذ: محمود عادل صالح | للتواصل هاتفياً أو واتساب: ٠١٥٥٢٤٠٢٩١٢ | جميع الحقوق محفوظة لمنظومة الرصد الذكية لدرجات الطالب 2026
+        بواسطة الأستاذ: محمود عادل صالح | هاتف: ٠١٥٥٢٤٠٢٩١٢ | منظومة الرصد الذكية لدرجات الطالب
     </marquee>
 </div>
 
@@ -293,153 +237,85 @@
 <script>
     let students = [];
     let db = {};
-    let settings = { subject: '', grade: '', teacher: '' };
-    let isVoiceEnabled = false;
-    let recognition = null;
-    
-    // الأابيع الـ 12 + الاختبارات
+    let settings = {};
     const weeksList = ['w1','w2','w3','w4','w5','ex1','w6','w7','w8','w9','w10','ex2','w11','w12'];
-    const arNumbers = {'صفر':0,'واحد':1,'اتنين':2,'تلاتة':3,'تلاته':3,'اربعة':4,'خمسة':5,'خمسه':5,'ستة':6,'سبعة':7,'تمانية':8,'تمنية':8,'تسعة':9,'عشرة':10};
 
-    function showToast(msg) {
+    function showToast(m) {
         const t = document.getElementById('toast');
-        t.innerText = msg; t.style.display = 'block';
+        t.innerText = m; t.style.display = 'block';
         setTimeout(() => t.style.display='none', 2000);
     }
 
-    function toggleGlobalVoice() {
-        isVoiceEnabled = !isVoiceEnabled;
-        const btn = document.getElementById('masterVoiceBtn');
-        btn.classList.toggle('active', isVoiceEnabled);
-        btn.innerHTML = isVoiceEnabled ? '<i class="fas fa-microphone"></i> <span>الصوت مفعل</span>' : '<i class="fas fa-microphone-slash"></i> <span>الصوت معطل</span>';
-        if(isVoiceEnabled) showToast("تم تفعيل الرصد التلقائي");
-    }
-
     function initApp() {
-        const rawNames = document.getElementById('namesList').value.trim();
-        if(!rawNames) return alert("يرجى إدخال أسماء الطلاب أولاً");
-        
+        const raw = document.getElementById('namesList').value.trim();
+        if(!raw) return alert("أدخل الأسماء");
         settings = {
-            subject: document.getElementById('subjectName').value || 'مادة غير محددة',
-            grade: document.getElementById('gradeLevel').value || 'فصل غير محدد',
-            teacher: document.getElementById('teacherName').value || 'معلم غير محدد'
+            subject: document.getElementById('subjectName').value || 'مادة',
+            grade: document.getElementById('gradeLevel').value || 'فصل',
+            teacher: document.getElementById('teacherName').value || 'معلم'
         };
-
-        students = rawNames.split('\n').map(n => n.trim()).filter(n => n);
+        students = raw.split('\n').map(n => n.trim()).filter(n => n);
         students.forEach((_, i) => { if(!db[i]) db[i] = {}; });
-        
         document.getElementById('setup-screen').style.display = 'none';
         document.getElementById('appTabs').style.display = 'flex';
-        
-        document.getElementById('infoDisplay').innerText = `${settings.subject} - ${settings.grade} | أ/ ${settings.teacher}`;
+        document.getElementById('infoSummary').innerHTML = `<b>${settings.subject} | ${settings.grade} | أ/ ${settings.teacher}</b>`;
         switchTab('grading');
         saveDataSilent();
     }
 
-    function switchTab(tab) {
+    function switchTab(t) {
         document.querySelectorAll('[id$="-screen"]').forEach(s => s.style.display = 'none');
-        document.getElementById(tab + '-screen').style.display = 'block';
+        document.getElementById(t + '-screen').style.display = 'block';
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        
-        const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.innerText.includes(tab === 'grading' ? 'الأسبوعي' : tab === 'fullSheet' ? 'الشيت' : 'التقرير'));
-        if(activeBtn) activeBtn.classList.add('active');
-
-        if(tab === 'grading') renderStudents();
-        if(tab === 'fullSheet') renderFullSheet();
-        if(tab === 'report') renderFinalReport();
+        if(t === 'grading') renderStudents();
+        if(t === 'fullSheet') renderFullSheet();
+        if(t === 'report') renderFinalReport();
     }
 
     function renderStudents() {
-        const container = document.getElementById('studentsContainer');
+        const cont = document.getElementById('studentsContainer');
         const week = document.getElementById('weekSelect').value;
         const isEx = week.startsWith('ex');
-        container.innerHTML = '';
-
+        cont.innerHTML = '';
         students.forEach((name, i) => {
-            const data = db[i][week] || {t:'', v:'', s:''};
+            const d = db[i][week] || {t:'', v:'', s:''};
             const div = document.createElement('div');
             div.className = 'student-item';
             div.innerHTML = `
                 <div class="student-name" id="name_weekly_${i}">${i+1}. ${name}</div>
                 <div class="inputs-row">
-                    ${createInput(i, week, 't', isEx?30:15, data.t, 'weekly', isEx?'اختبار':'تقييم')}
-                    ${!isEx ? createInput(i, week, 'v', 15, data.v, 'weekly', 'حصة') : ''}
-                    ${!isEx ? createInput(i, week, 's', 10, data.s, 'weekly', 'سلوك') : ''}
-                </div>
-            `;
-            container.appendChild(div);
+                    ${createInput(i, week, 't', isEx?30:15, d.t, 'weekly', isEx?'اختبار':'تقييم')}
+                    ${!isEx ? createInput(i, week, 'v', 15, d.v, 'weekly', 'حصة') : ''}
+                    ${!isEx ? createInput(i, week, 's', 10, d.s, 'weekly', 'سلوك') : ''}
+                </div>`;
+            cont.appendChild(div);
         });
     }
 
     function createInput(idx, w, f, max, val, context, label) {
         const id = `${context}_${idx}_${w}_${f}`;
         return `
-            <div class="input-box">
-                <label>${label}</label>
+            <div style="text-align:center">
+                <label style="font-size:10px; display:block;">${label}</label>
                 <input type="number" id="${id}" class="score-input" value="${val}"
-                    onfocus="handleInputFocus(this, ${idx}, '${context}', ${max}, ${idx}, '${w}', '${f}')"
-                    onblur="handleInputBlur(${idx}, '${context}')"
-                    onkeydown="handleNavigation(event, ${idx}, '${w}', '${f}')"
+                    onfocus="document.getElementById('name_${context}_${idx}').classList.add('highlight-name')"
+                    onblur="document.getElementById('name_${context}_${idx}').classList.remove('highlight-name')"
+                    onkeydown="handleNav(event, ${idx}, '${w}', '${f}')"
                     onchange="updateScore(${idx}, '${w}', '${f}', this.value, ${max})">
-            </div>
-        `;
+            </div>`;
     }
 
-    function handleInputFocus(el, idx, context, max, i, w, f) {
-        const nameEl = document.getElementById(`name_${context}_${idx}`);
-        if(nameEl) nameEl.classList.add('highlight-name');
-        
-        if(isVoiceEnabled) {
-            startVoiceRecognition(el.id, max, i, w, f);
-        }
-    }
-
-    function handleInputBlur(idx, context) {
-        const nameEl = document.getElementById(`name_${context}_${idx}`);
-        if(nameEl) nameEl.classList.remove('highlight-name');
-        if(recognition) { recognition.stop(); recognition = null; }
-    }
-
-    function startVoiceRecognition(targetId, max, idx, w, f) {
-        if (!('webkitSpeechRecognition' in window)) return;
-        
-        recognition = new webkitSpeechRecognition();
-        recognition.lang = 'ar-EG';
-        recognition.onresult = (event) => {
-            let result = event.results[0][0].transcript;
-            let value = parseFloat(result);
-            // تحويل الكلمات إلى أرقام
-            if(isNaN(value)) {
-                for(let key in arNumbers) if(result.includes(key)) value = arNumbers[key];
-            }
-            
-            if(!isNaN(value)) {
-                value = Math.min(value, max);
-                document.getElementById(targetId).value = value;
-                updateScore(idx, w, f, value, max);
-                // الانتقال للخانة التالية تلقائياً
-                handleNavigation({key:'Enter', preventDefault:()=>{}}, idx, w, f);
-            }
-        };
-        recognition.start();
-    }
-
-    function handleNavigation(e, idx, w, f) {
+    function handleNav(e, idx, w, f) {
         if(e.key === 'Enter') {
             e.preventDefault();
             let nextId = "";
             const isEx = w.startsWith('ex');
             const context = document.getElementById('fullSheet-screen').style.display === 'block' ? 'grid' : 'weekly';
-
             if(f === 't' && !isEx) nextId = `${context}_${idx}_${w}_v`;
             else if(f === 'v') nextId = `${context}_${idx}_${w}_s`;
-            else { 
-                // إذا كنا في السلوك أو في الاختبار، ننتقل للطالب التالي
-                if(idx < students.length - 1) nextId = `${context}_${idx+1}_${w}_t`;
-            }
-
-            const nextEl = document.getElementById(nextId);
-            if(nextEl) { nextEl.focus(); nextEl.select(); }
+            else { if(idx < students.length - 1) nextId = `${context}_${idx+1}_${w}_t`; }
+            const el = document.getElementById(nextId);
+            if(el) { el.focus(); el.select(); }
         }
     }
 
@@ -449,138 +325,463 @@
         saveDataSilent();
     }
 
-    function calculateStats(idx) {
-        const getAverage = (weeks) => {
+    function calculate(idx) {
+        const getAvg = (wks) => {
             let t=0, tc=0, v=0, vc=0, s=0, sc=0;
-            weeks.forEach(w => {
+            wks.forEach(w => {
                 let d = db[idx][w];
                 if(d && !w.startsWith('ex')) {
-                    if(d.t !== '') { t+=d.t; tc++; }
-                    if(d.v !== '') { v+=d.v; vc++; }
-                    if(d.s !== '') { s+=d.s; sc++; }
+                    if(d.t!==''){t+=d.t; tc++;} if(d.v!==''){v+=d.v; vc++;} if(d.s!==''){s+=d.s; sc++;}
                 }
             });
-            const res = (sum, count) => count > 0 ? sum / count : 0;
-            return { t: res(t,tc), v: res(v,vc), s: res(s,sc), total: res(t,tc)+res(v,vc)+res(s,sc) };
+            const a = (x,y) => y > 0 ? x/y : 0;
+            return { t: a(t,tc), v: a(v,vc), s: a(s,sc), sum: a(t,tc)+a(v,vc)+a(s,sc) };
         };
-
-        const p1 = getAverage(['w1','w2','w3','w4','w5']);
-        const p2 = getAverage(['w6','w7','w8','w9','w10']);
-        const overall = getAverage(weeksList);
-        
-        let exSum=0, exCount=0;
-        ['ex1','ex2'].forEach(e => { if(db[idx][e] && db[idx][e].t !== '') { exSum+=db[idx][e].t; exCount++; } });
-        const avgEx = exCount > 0 ? exSum / exCount : 0;
-
-        return {
-            p1, p2, overall,
-            avgEx: avgEx,
-            finalScore: (overall.total + avgEx).toFixed(1)
-        };
+        const p1 = getAvg(['w1','w2','w3','w4','w5']);
+        const p2 = getAvg(['w6','w7','w8','w9','w10']);
+        const overall = getAvg(weeksList);
+        let exS=0, exC=0; ['ex1','ex2'].forEach(e => { if(db[idx][e] && db[idx][e].t!==''){exS+=db[idx][e].t; exC++;} });
+        const avgEx = exC > 0 ? exS/exC : 0;
+        return { p1, p2, overall, avgEx, total: (overall.sum + avgEx).toFixed(1) };
     }
 
     function renderFullSheet() {
-        const container = document.getElementById('fullSheetContainer');
-        let html = `<table><thead><tr><th rowspan="2" class="sticky-col">الأسماء</th>`;
-        
-        weeksList.forEach(w => {
-            const isEx = w.startsWith('ex');
-            html += `<th colspan="${isEx?1:3}">${w.replace('w','أسبوع ').replace('ex','اختبار ')}</th>`;
-        });
-        html += `<th colspan="4" class="subtotal-section">فترة 1</th><th colspan="4" class="subtotal-section">فترة 2</th><th class="final-section">المجموع 70</th></tr><tr>`;
-        
-        weeksList.forEach(w => {
-            if(w.startsWith('ex')) html += `<th>د</th>`;
-            else html += `<th>ت</th><th>ح</th><th>س</th>`;
-        });
-        html += `<th class="subtotal-section">ت</th><th class="subtotal-section">ح</th><th class="subtotal-section">س</th><th class="subtotal-section">م</th>`;
-        html += `<th class="subtotal-section">ت</th><th class="subtotal-section">ح</th><th class="subtotal-section">س</th><th class="subtotal-section">م</th>`;
-        html += `<th class="final-section">نهائي</th></tr></thead><tbody>`;
-
+        const cont = document.getElementById('fullSheetContainer');
+        let h = `<table><thead><tr><th rowspan="2" class="sticky-col">الأسماء</th>`;
+        weeksList.forEach(w => h += `<th colspan="${w.startsWith('ex')?1:3}">${w.replace('w','أسبوع ').replace('ex','اختبار ')}</th>`);
+        h += `<th colspan="4" class="subtotal-section">ف1</th><th colspan="4" class="subtotal-section">ف2</th><th class="final-section">المجموع 70</th></tr><tr>`;
+        weeksList.forEach(w => { if(w.startsWith('ex')) h+=`<th>د</th>`; else h+=`<th>ت</th><th>ح</th><th>س</th>`; });
+        h += `<th>ت</th><th>ح</th><th>س</th><th>م</th><th>ت</th><th>ح</th><th>س</th><th>م</th><th>إجمالي</th></tr></thead><tbody>`;
         students.forEach((name, i) => {
-            const stats = calculateStats(i);
-            html += `<tr><td class="sticky-col student-name" id="name_grid_${i}">${name}</td>`;
-            
+            const r = calculate(i);
+            h += `<tr><td class="sticky-col student-name" id="name_grid_${i}">${name}</td>`;
             weeksList.forEach(w => {
-                const isEx = w.startsWith('ex');
-                const d = db[i][w] || {t:'', v:'', s:''};
-                html += `<td><input type="number" id="grid_${i}_${w}_t" class="grid-input" value="${d.t}" onfocus="handleInputFocus(this, ${i}, 'grid', ${isEx?30:15}, ${i}, '${w}', 't')" onblur="handleInputBlur(${i}, 'grid')" onkeydown="handleNavigation(event, ${i}, '${w}', 't')" onchange="updateScore(${i},'${w}','t',this.value, ${isEx?30:15})"></td>`;
+                const isEx = w.startsWith('ex'); const d = db[i][w] || {t:'', v:'', s:''};
+                h += `<td><input type="number" id="grid_${i}_${w}_t" class="grid-input" value="${d.t}" onfocus="document.getElementById('name_grid_${i}').classList.add('highlight-name')" onblur="document.getElementById('name_grid_${i}').classList.remove('highlight-name')" onkeydown="handleNav(event, ${i}, '${w}', 't')" onchange="updateScore(${i},'${w}','t',this.value, ${isEx?30:15})"></td>`;
                 if(!isEx) {
-                    html += `<td><input type="number" id="grid_${i}_${w}_v" class="grid-input" value="${d.v}" onfocus="handleInputFocus(this, ${i}, 'grid', 15, ${i}, '${w}', 'v')" onblur="handleInputBlur(${i}, 'grid')" onkeydown="handleNavigation(event, ${i}, '${w}', 'v')" onchange="updateScore(${i},'${w}','v',this.value, 15)"></td>`;
-                    html += `<td><input type="number" id="grid_${i}_${w}_s" class="grid-input" value="${d.s}" onfocus="handleInputFocus(this, ${i}, 'grid', 10, ${i}, '${w}', 's')" onblur="handleInputBlur(${i}, 'grid')" onkeydown="handleNavigation(event, ${i}, '${w}', 's')" onchange="updateScore(${i},'${w}','s',this.value, 10)"></td>`;
+                    h += `<td><input type="number" id="grid_${i}_${w}_v" class="grid-input" value="${d.v}" onfocus="document.getElementById('name_grid_${i}').classList.add('highlight-name')" onblur="document.getElementById('name_grid_${i}').classList.remove('highlight-name')" onkeydown="handleNav(event, ${i}, '${w}', 'v')" onchange="updateScore(${i},'${w}','v',this.value, 15)"></td>`;
+                    h += `<td><input type="number" id="grid_${i}_${w}_s" class="grid-input" value="${d.s}" onfocus="document.getElementById('name_grid_${i}').classList.add('highlight-name')" onblur="document.getElementById('name_grid_${i}').classList.remove('highlight-name')" onkeydown="handleNav(event, ${i}, '${w}', 's')" onchange="updateScore(${i},'${w}','s',this.value, 10)"></td>`;
                 }
             });
-            
-            html += `<td class="subtotal-section">${stats.p1.t.toFixed(1)}</td><td class="subtotal-section">${stats.p1.v.toFixed(1)}</td><td class="subtotal-section">${stats.p1.s.toFixed(1)}</td><td class="subtotal-section">${stats.p1.total.toFixed(1)}</td>`;
-            html += `<td class="subtotal-section">${stats.p2.t.toFixed(1)}</td><td class="subtotal-section">${stats.p2.v.toFixed(1)}</td><td class="subtotal-section">${stats.p2.s.toFixed(1)}</td><td class="subtotal-section">${stats.p2.total.toFixed(1)}</td>`;
-            html += `<td class="final-section">${stats.finalScore}</td></tr>`;
+            h += `<td class="subtotal-section">${r.p1.t.toFixed(1)}</td><td class="subtotal-section">${r.p1.v.toFixed(1)}</td><td class="subtotal-section">${r.p1.s.toFixed(1)}</td><td class="subtotal-section">${r.p1.sum.toFixed(1)}</td>`;
+            h += `<td class="subtotal-section">${r.p2.t.toFixed(1)}</td><td class="subtotal-section">${r.p2.v.toFixed(1)}</td><td class="subtotal-section">${r.p2.s.toFixed(1)}</td><td class="subtotal-section">${r.p2.sum.toFixed(1)}</td>`;
+            h += `<td class="final-section">${r.total}</td></tr>`;
         });
-        
-        container.innerHTML = html + `</tbody></table>`;
+        cont.innerHTML = h + `</tbody></table>`;
     }
 
     function renderFinalReport() {
-        let html = `<table><thead><tr><th>م</th><th>الاسم</th><th>تقييم (15)</th><th>حصة (15)</th><th>سلوك (10)</th><th>اختبار (30)</th><th class="final-section">المجموع (70)</th></tr></thead><tbody>`;
+        let h = `<table><thead><tr><th>م</th><th>الاسم</th><th>تقييم (15)</th><th>حصة (15)</th><th>سلوك (10)</th><th>اختبار (30)</th><th class="final-section">المجموع (70)</th></tr></thead><tbody>`;
         students.forEach((name, i) => {
-            const stats = calculateStats(i);
-            html += `<tr><td>${i+1}</td><td style="text-align:right">${name}</td><td>${stats.overall.t.toFixed(1)}</td><td>${stats.overall.v.toFixed(1)}</td><td>${stats.overall.s.toFixed(1)}</td><td>${stats.avgEx.toFixed(1)}</td><td class="final-section">${stats.finalScore}</td></tr>`;
+            const r = calculate(i);
+            h += `<tr><td>${i+1}</td><td style="text-align:right">${name}</td><td>${r.overall.t.toFixed(1)}</td><td>${r.overall.v.toFixed(1)}</td><td>${r.overall.s.toFixed(1)}</td><td>${r.avgEx.toFixed(1)}</td><td class="final-section">${r.total}</td></tr>`;
         });
-        document.getElementById('reportTableContainer').innerHTML = html + `</tbody></table>`;
+        document.getElementById('reportTableContainer').innerHTML = h + `</tbody></table>`;
     }
 
     function saveData() { saveDataSilent(); showToast("تم حفظ البيانات بنجاح"); }
     function saveDataSilent() { localStorage.setItem('mahmoud_v4_db', JSON.stringify({students, db, settings})); }
     
     function exportToExcel() {
-        const data = students.map((name, i) => {
-            const stats = calculateStats(i);
-            return { 'م': i+1, 'الاسم': name, 'المجموع النهائي (70)': stats.finalScore };
-        });
-        const ws = XLSX.utils.json_to_sheet(data);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "الدرجات");
         const filename = `${settings.subject}_${settings.teacher}_${settings.grade}`.replace(/ /g, '_');
+        const data = students.map((n, i) => { const r = calculate(i); return { 'م': i+1, 'الاسم': n, 'تقييم': r.overall.t.toFixed(1), 'حصة': r.overall.v.toFixed(1), 'سلوك': r.overall.s.toFixed(1), 'اختبار': r.avgEx.toFixed(1), 'المجموع النهائي': r.total }; });
+        const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "الدرجات");
         XLSX.writeFile(wb, `${filename}.xlsx`);
     }
 
     function exportFullData() {
-        const backup = JSON.stringify({students, db, settings});
-        const blob = new Blob([backup], {type: 'application/json'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
         const filename = `${settings.subject}_${settings.teacher}_${settings.grade}_backup`.replace(/ /g, '_');
-        a.href = url; a.download = `${filename}.json`; a.click();
+        const blob = new Blob([JSON.stringify({students, db, settings})], {type: 'application/json'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${filename}.json`; a.click();
     }
 
-    function importFullData(input) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const data = JSON.parse(e.target.result);
-            students = data.students; db = data.db; settings = data.settings;
-            document.getElementById('setup-screen').style.display = 'none';
-            document.getElementById('appTabs').style.display = 'flex';
-            document.getElementById('infoDisplay').innerText = `${settings.subject} - ${settings.grade} | أ/ ${settings.teacher}`;
-            switchTab('grading');
-            showToast("تم استعادة النسخة الاحتياطية بنجاح");
-        };
-        reader.readAsText(input.files[0]);
-    }
-
-    function clearSystem() {
-        if(confirm("تحذير: سيتم حذف جميع الأسماء والدرجات نهائياً. هل أنت متأكد؟")) {
-            localStorage.removeItem('mahmoud_v4_db');
-            location.reload();
-        }
-    }
+    function clearSystem() { if(confirm("هل أنت متأكد من حذف البيانات؟")) { localStorage.clear(); location.reload(); } }
 
     window.onload = () => {
         const saved = localStorage.getItem('mahmoud_v4_db');
         if(saved) {
-            const data = JSON.parse(saved);
-            students = data.students; db = data.db; settings = data.settings;
+            const d = JSON.parse(saved); students = d.students; db = d.db; settings = d.settings;
             document.getElementById('setup-screen').style.display = 'none';
             document.getElementById('appTabs').style.display = 'flex';
-            document.getElementById('infoDisplay').innerText = `${settings.subject} - ${settings.grade} | أ/ ${settings.teacher}`;
+            document.getElementById('infoSummary').innerHTML = `<b>${settings.subject} | ${settings.grade} | أ/ ${settings.teacher}</b>`;
+            switchTab('grading');
+        }
+    };
+</script>
+</body>
+</html>
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding-bottom: 80px;
+            direction: rtl;
+            color: #1a202c;
+        }
+
+        .app-header {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px; /* تصغير الهيدر */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        
+        /* تصغير حجم العنوان */
+        .app-title {
+            font-weight: 800;
+            font-size: 1.05rem; 
+            margin: 0;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            padding: 10px;
+            overflow-x: auto;
+            background: white;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab-btn {
+            padding: 10px 18px;
+            border: none;
+            background: #edf2f7;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            white-space: nowrap;
+            color: #4a5568;
+            font-size: 0.85rem;
+        }
+
+        .tab-btn.active { background: var(--accent); color: white; }
+
+        .container { width: 100%; max-width: 1500px; margin: 0 auto; padding: 10px; }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 15px;
+        }
+
+        .student-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+        @media (min-width: 768px) { .student-item { flex-direction: row; align-items: center; justify-content: space-between; } }
+
+        .student-name { font-weight: bold; font-size: 1rem; color: var(--primary); transition: 0.2s; }
+        .highlight-name { color: #3182ce !important; transform: scale(1.02); }
+
+        .inputs-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        @media (min-width: 768px) { .inputs-row { display: flex; gap: 15px; } }
+
+        .score-input, .grid-input {
+            width: 60px;
+            padding: 10px 2px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 900;
+            font-size: 1.2rem;
+            outline: none;
+        }
+        .score-input:focus, .grid-input:focus { border-color: var(--accent); background: #f0fff4; }
+
+        /* الشيت الكامل - الرأس أسود عريض */
+        th { 
+            background: #cbd5e0; 
+            color: #000; 
+            padding: 12px 6px; 
+            border: 1px solid #a0aec0; 
+            white-space: nowrap; 
+            text-align: center; 
+            font-weight: 900; 
+        }
+        td { padding: 8px 4px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; }
+        
+        .sticky-col {
+            position: sticky; right: 0; background: white; z-index: 10;
+            border-left: 3px solid #cbd5e0 !important;
+        }
+
+        .subtotal-section { background: #ebf8ff !important; color: #2b6cb0; }
+        .final-section { background: #f0fff4 !important; color: var(--success); }
+
+        .footer-marquee {
+            position: fixed; bottom: 0; width: 100%;
+            background: var(--primary); color: white;
+            padding: 8px 0; font-weight: bold; z-index: 1000;
+        }
+
+        .table-scroll { overflow-x: auto; border-radius: 12px; border: 1px solid #cbd5e0; }
+        #toast {
+            position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%);
+            background: #2d3748; color: white; padding: 12px 25px; border-radius: 25px; display: none; z-index: 2000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-header">
+    <div class="header-left">
+        <i class="fas fa-graduation-cap"></i>
+        <h1 class="app-title">منظومة الرصد الذكية لدرجات الطالب</h1>
+    </div>
+    <button class="btn btn-success" style="padding: 8px 15px; border:none; border-radius:8px; cursor:pointer;" onclick="saveData()">
+        <i class="fas fa-save"></i> حفظ البيانات
+    </button>
+</div>
+
+<div class="tabs" id="appTabs" style="display:none;">
+    <button class="tab-btn active" onclick="switchTab('grading')">الرصد الأسبوعي</button>
+    <button class="tab-btn" onclick="switchTab('fullSheet')">الشيت الكامل</button>
+    <button class="tab-btn" onclick="switchTab('report')">التقرير الختامي</button>
+    <button class="tab-btn" onclick="switchTab('tools')">الأدوات</button>
+</div>
+
+<div class="container">
+    <div id="setup-screen" class="card">
+        <h3><i class="fas fa-cogs"></i> تهيئة النظام</h3>
+        <input type="text" id="subjectName" class="form-control" style="width:100%; padding:12px; margin-bottom:10px; border-radius:8px; border:1px solid #ccc;" placeholder="المادة الدراسية">
+        <input type="text" id="gradeLevel" class="form-control" style="width:100%; padding:12px; margin-bottom:10px; border-radius:8px; border:1px solid #ccc;" placeholder="الصف والفصل">
+        <input type="text" id="teacherName" class="form-control" style="width:100%; padding:12px; margin-bottom:10px; border-radius:8px; border:1px solid #ccc;" placeholder="اسم المعلم">
+        <textarea id="namesList" class="form-control" style="width:100%; height:150px; padding:12px; margin-bottom:10px; border-radius:8px; border:1px solid #ccc;" placeholder="أدخل الأسماء (اسم في كل سطر)"></textarea>
+        <button class="btn btn-primary" style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="initApp()">تشغيل المنظومة</button>
+    </div>
+
+    <div id="grading-screen" style="display:none;">
+        <div class="card" id="infoSummary"></div>
+        <select id="weekSelect" class="form-control" style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px;" onchange="renderStudents()">
+            <optgroup label="الفترة الأولى">
+                <option value="w1">الأسبوع 1</option><option value="w2">الأسبوع 2</option><option value="w3">الأسبوع 3</option><option value="w4">الأسبوع 4</option><option value="w5">الأسبوع 5</option>
+                <option value="ex1">اختبار الشهر 1 (30)</option>
+            </optgroup>
+            <optgroup label="الفترة الثانية">
+                <option value="w6">الأسبوع 6</option><option value="w7">الأسبوع 7</option><option value="w8">الأسبوع 8</option><option value="w9">الأسبوع 9</option><option value="w10">الأسبوع 10</option>
+                <option value="ex2">اختبار الشهر 2 (30)</option>
+            </optgroup>
+            <optgroup label="نهاية الفصل">
+                <option value="w11">الأسبوع 11</option><option value="w12">الأسبوع 12</option>
+            </optgroup>
+        </select>
+        <div id="studentsContainer"></div>
+    </div>
+
+    <div id="fullSheet-screen" class="card" style="display:none;">
+        <div class="table-scroll" id="fullSheetContainer"></div>
+    </div>
+
+    <div id="report-screen" class="card" style="display:none;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+            <h3 style="margin:0;">التقرير الختامي المعتمد</h3>
+            <button class="btn btn-success" style="padding:8px 15px; border:none; border-radius:5px; cursor:pointer;" onclick="exportToExcel()">تصدير إكسيل</button>
+        </div>
+        <div class="table-scroll" id="reportTableContainer"></div>
+    </div>
+
+    <div id="tools-screen" class="card" style="display:none;">
+        <button class="btn btn-primary" style="width:100%; margin-bottom:10px; padding:12px;" onclick="exportFullData()">نسخة احتياطية (JSON)</button>
+        <button class="btn btn-danger" style="width:100%; padding:12px; background:var(--danger); color:white; border:none; border-radius:8px;" onclick="clearSystem()">حذف كافة البيانات</button>
+    </div>
+</div>
+
+<div class="footer-marquee">
+    <marquee behavior="scroll" direction="right">
+        بواسطة الأستاذ: محمود عادل صالح | هاتف: ٠١٥٥٢٤٠٢٩١٢ | منظومة الرصد الذكية لدرجات الطالب
+    </marquee>
+</div>
+
+<div id="toast"></div>
+
+<script>
+    let students = [];
+    let db = {};
+    let settings = {};
+    const weeksList = ['w1','w2','w3','w4','w5','ex1','w6','w7','w8','w9','w10','ex2','w11','w12'];
+
+    function showToast(m) {
+        const t = document.getElementById('toast');
+        t.innerText = m; t.style.display = 'block';
+        setTimeout(() => t.style.display='none', 2000);
+    }
+
+    function initApp() {
+        const raw = document.getElementById('namesList').value.trim();
+        if(!raw) return alert("أدخل الأسماء");
+        settings = {
+            subject: document.getElementById('subjectName').value || 'مادة',
+            grade: document.getElementById('gradeLevel').value || 'فصل',
+            teacher: document.getElementById('teacherName').value || 'معلم'
+        };
+        students = raw.split('\n').map(n => n.trim()).filter(n => n);
+        students.forEach((_, i) => { if(!db[i]) db[i] = {}; });
+        document.getElementById('setup-screen').style.display = 'none';
+        document.getElementById('appTabs').style.display = 'flex';
+        document.getElementById('infoSummary').innerHTML = `<b>${settings.subject} | ${settings.grade} | أ/ ${settings.teacher}</b>`;
+        switchTab('grading');
+        saveDataSilent();
+    }
+
+    function switchTab(t) {
+        document.querySelectorAll('[id$="-screen"]').forEach(s => s.style.display = 'none');
+        document.getElementById(t + '-screen').style.display = 'block';
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        if(t === 'grading') renderStudents();
+        if(t === 'fullSheet') renderFullSheet();
+        if(t === 'report') renderFinalReport();
+    }
+
+    function renderStudents() {
+        const cont = document.getElementById('studentsContainer');
+        const week = document.getElementById('weekSelect').value;
+        const isEx = week.startsWith('ex');
+        cont.innerHTML = '';
+        students.forEach((name, i) => {
+            const d = db[i][week] || {t:'', v:'', s:''};
+            const div = document.createElement('div');
+            div.className = 'student-item';
+            div.innerHTML = `
+                <div class="student-name" id="name_weekly_${i}">${i+1}. ${name}</div>
+                <div class="inputs-row">
+                    ${createInput(i, week, 't', isEx?30:15, d.t, 'weekly', isEx?'اختبار':'تقييم')}
+                    ${!isEx ? createInput(i, week, 'v', 15, d.v, 'weekly', 'حصة') : ''}
+                    ${!isEx ? createInput(i, week, 's', 10, d.s, 'weekly', 'سلوك') : ''}
+                </div>`;
+            cont.appendChild(div);
+        });
+    }
+
+    function createInput(idx, w, f, max, val, context, label) {
+        const id = `${context}_${idx}_${w}_${f}`;
+        return `
+            <div style="text-align:center">
+                <label style="font-size:10px; display:block;">${label}</label>
+                <input type="number" id="${id}" class="score-input" value="${val}"
+                    onfocus="document.getElementById('name_${context}_${idx}').classList.add('highlight-name')"
+                    onblur="document.getElementById('name_${context}_${idx}').classList.remove('highlight-name')"
+                    onkeydown="handleNav(event, ${idx}, '${w}', '${f}')"
+                    onchange="updateScore(${idx}, '${w}', '${f}', this.value, ${max})">
+            </div>`;
+    }
+
+    function handleNav(e, idx, w, f) {
+        if(e.key === 'Enter') {
+            e.preventDefault();
+            let nextId = "";
+            const isEx = w.startsWith('ex');
+            const context = document.getElementById('fullSheet-screen').style.display === 'block' ? 'grid' : 'weekly';
+            if(f === 't' && !isEx) nextId = `${context}_${idx}_${w}_v`;
+            else if(f === 'v') nextId = `${context}_${idx}_${w}_s`;
+            else { if(idx < students.length - 1) nextId = `${context}_${idx+1}_${w}_t`; }
+            const el = document.getElementById(nextId);
+            if(el) { el.focus(); el.select(); }
+        }
+    }
+
+    function updateScore(idx, w, f, v, max) {
+        if(!db[idx][w]) db[idx][w] = {};
+        db[idx][w][f] = v === '' ? '' : Math.min(parseFloat(v), max);
+        saveDataSilent();
+    }
+
+    function calculate(idx) {
+        const getAvg = (wks) => {
+            let t=0, tc=0, v=0, vc=0, s=0, sc=0;
+            wks.forEach(w => {
+                let d = db[idx][w];
+                if(d && !w.startsWith('ex')) {
+                    if(d.t!==''){t+=d.t; tc++;} if(d.v!==''){v+=d.v; vc++;} if(d.s!==''){s+=d.s; sc++;}
+                }
+            });
+            const a = (x,y) => y > 0 ? x/y : 0;
+            return { t: a(t,tc), v: a(v,vc), s: a(s,sc), sum: a(t,tc)+a(v,vc)+a(s,sc) };
+        };
+        const p1 = getAvg(['w1','w2','w3','w4','w5']);
+        const p2 = getAvg(['w6','w7','w8','w9','w10']);
+        const overall = getAvg(weeksList);
+        let exS=0, exC=0; ['ex1','ex2'].forEach(e => { if(db[idx][e] && db[idx][e].t!==''){exS+=db[idx][e].t; exC++;} });
+        const avgEx = exC > 0 ? exS/exC : 0;
+        return { p1, p2, overall, avgEx, total: (overall.sum + avgEx).toFixed(1) };
+    }
+
+    function renderFullSheet() {
+        const cont = document.getElementById('fullSheetContainer');
+        let h = `<table><thead><tr><th rowspan="2" class="sticky-col">الأسماء</th>`;
+        weeksList.forEach(w => h += `<th colspan="${w.startsWith('ex')?1:3}">${w.replace('w','أسبوع ').replace('ex','اختبار ')}</th>`);
+        h += `<th colspan="4" class="subtotal-section">ف1</th><th colspan="4" class="subtotal-section">ف2</th><th class="final-section">المجموع 70</th></tr><tr>`;
+        weeksList.forEach(w => { if(w.startsWith('ex')) h+=`<th>د</th>`; else h+=`<th>ت</th><th>ح</th><th>س</th>`; });
+        h += `<th>ت</th><th>ح</th><th>س</th><th>م</th><th>ت</th><th>ح</th><th>س</th><th>م</th><th>إجمالي</th></tr></thead><tbody>`;
+        students.forEach((name, i) => {
+            const r = calculate(i);
+            h += `<tr><td class="sticky-col student-name" id="name_grid_${i}">${name}</td>`;
+            weeksList.forEach(w => {
+                const isEx = w.startsWith('ex'); const d = db[i][w] || {t:'', v:'', s:''};
+                h += `<td><input type="number" id="grid_${i}_${w}_t" class="grid-input" value="${d.t}" onfocus="document.getElementById('name_grid_${i}').classList.add('highlight-name')" onblur="document.getElementById('name_grid_${i}').classList.remove('highlight-name')" onkeydown="handleNav(event, ${i}, '${w}', 't')" onchange="updateScore(${i},'${w}','t',this.value, ${isEx?30:15})"></td>`;
+                if(!isEx) {
+                    h += `<td><input type="number" id="grid_${i}_${w}_v" class="grid-input" value="${d.v}" onfocus="document.getElementById('name_grid_${i}').classList.add('highlight-name')" onblur="document.getElementById('name_grid_${i}').classList.remove('highlight-name')" onkeydown="handleNav(event, ${i}, '${w}', 'v')" onchange="updateScore(${i},'${w}','v',this.value, 15)"></td>`;
+                    h += `<td><input type="number" id="grid_${i}_${w}_s" class="grid-input" value="${d.s}" onfocus="document.getElementById('name_grid_${i}').classList.add('highlight-name')" onblur="document.getElementById('name_grid_${i}').classList.remove('highlight-name')" onkeydown="handleNav(event, ${i}, '${w}', 's')" onchange="updateScore(${i},'${w}','s',this.value, 10)"></td>`;
+                }
+            });
+            h += `<td class="subtotal-section">${r.p1.t.toFixed(1)}</td><td class="subtotal-section">${r.p1.v.toFixed(1)}</td><td class="subtotal-section">${r.p1.s.toFixed(1)}</td><td class="subtotal-section">${r.p1.sum.toFixed(1)}</td>`;
+            h += `<td class="subtotal-section">${r.p2.t.toFixed(1)}</td><td class="subtotal-section">${r.p2.v.toFixed(1)}</td><td class="subtotal-section">${r.p2.s.toFixed(1)}</td><td class="subtotal-section">${r.p2.sum.toFixed(1)}</td>`;
+            h += `<td class="final-section">${r.total}</td></tr>`;
+        });
+        cont.innerHTML = h + `</tbody></table>`;
+    }
+
+    function renderFinalReport() {
+        let h = `<table><thead><tr><th>م</th><th>الاسم</th><th>تقييم (15)</th><th>حصة (15)</th><th>سلوك (10)</th><th>اختبار (30)</th><th class="final-section">المجموع (70)</th></tr></thead><tbody>`;
+        students.forEach((name, i) => {
+            const r = calculate(i);
+            h += `<tr><td>${i+1}</td><td style="text-align:right">${name}</td><td>${r.overall.t.toFixed(1)}</td><td>${r.overall.v.toFixed(1)}</td><td>${r.overall.s.toFixed(1)}</td><td>${r.avgEx.toFixed(1)}</td><td class="final-section">${r.total}</td></tr>`;
+        });
+        document.getElementById('reportTableContainer').innerHTML = h + `</tbody></table>`;
+    }
+
+    function saveData() { saveDataSilent(); showToast("تم حفظ البيانات بنجاح"); }
+    function saveDataSilent() { localStorage.setItem('mahmoud_v4_db', JSON.stringify({students, db, settings})); }
+    
+    function exportToExcel() {
+        const filename = `${settings.subject}_${settings.teacher}_${settings.grade}`.replace(/ /g, '_');
+        const data = students.map((n, i) => { const r = calculate(i); return { 'م': i+1, 'الاسم': n, 'تقييم': r.overall.t.toFixed(1), 'حصة': r.overall.v.toFixed(1), 'سلوك': r.overall.s.toFixed(1), 'اختبار': r.avgEx.toFixed(1), 'المجموع النهائي': r.total }; });
+        const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "الدرجات");
+        XLSX.writeFile(wb, `${filename}.xlsx`);
+    }
+
+    function exportFullData() {
+        const filename = `${settings.subject}_${settings.teacher}_${settings.grade}_backup`.replace(/ /g, '_');
+        const blob = new Blob([JSON.stringify({students, db, settings})], {type: 'application/json'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${filename}.json`; a.click();
+    }
+
+    function clearSystem() { if(confirm("هل أنت متأكد من حذف البيانات؟")) { localStorage.clear(); location.reload(); } }
+
+    window.onload = () => {
+        const saved = localStorage.getItem('mahmoud_v4_db');
+        if(saved) {
+            const d = JSON.parse(saved); students = d.students; db = d.db; settings = d.settings;
+            document.getElementById('setup-screen').style.display = 'none';
+            document.getElementById('appTabs').style.display = 'flex';
+            document.getElementById('infoSummary').innerHTML = `<b>${settings.subject} | ${settings.grade} | أ/ ${settings.teacher}</b>`;
             switchTab('grading');
         }
     };

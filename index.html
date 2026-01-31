@@ -3,77 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منظومة الرصد النهائية - الإصدار المعتمد</title>
+    <title>المنظومة الشاملة المعتمدة - أ/ محمود عادل صالح</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary: #2c3e50; --accent: #1abc9c; --danger: #e74c3c; --success: #27ae60; --bg: #f0f2f5; }
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: var(--bg); margin: 0; direction: rtl; padding-bottom: 60px; }
+        :root { --primary: #2c3e50; --accent: #1abc9c; --danger: #e74c3c; --success: #27ae60; --bg: #f8f9fa; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background: var(--bg); margin: 0; direction: rtl; padding-bottom: 70px; color: #333; }
         
-        .app-header { background: var(--primary); color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        .tabs { display: flex; gap: 5px; padding: 10px; overflow-x: auto; background: white; border-bottom: 2px solid #ddd; }
-        .tab-btn { padding: 10px 20px; border: none; background: #eee; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap; transition: 0.3s; }
-        .tab-btn.active { background: var(--accent); color: white; }
+        .app-header { background: var(--primary); color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .tabs { display: flex; gap: 8px; padding: 12px; overflow-x: auto; background: white; border-bottom: 2px solid #ddd; }
+        .tab-btn { padding: 12px 25px; border: none; background: #eaedf0; border-radius: 10px; cursor: pointer; font-weight: bold; white-space: nowrap; transition: 0.3s; color: #555; }
+        .tab-btn.active { background: var(--accent); color: white; transform: translateY(-2px); }
         
-        .container { width: 98%; max-width: 1600px; margin: 15px auto; }
-        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .container { width: 99%; max-width: 1900px; margin: 20px auto; }
+        .card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); margin-bottom: 25px; border: 1px solid #e0e0e0; }
         
-        .table-scroll { overflow-x: auto; max-height: 75vh; border: 1px solid #ccc; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; background: white; }
-        th { background: #34495e; color: white; border: 1px solid #455a64; padding: 8px 2px; position: sticky; top: 0; z-index: 5; }
-        td { border: 1px solid #cfd8dc; text-align: center; padding: 4px; font-weight: 900; }
-        .sticky-col { position: sticky; right: 0; background: #f8f9fa; z-index: 10; border-left: 3px solid #7f8c8d !important; }
+        .table-scroll { overflow-x: auto; max-height: 75vh; border: 1px solid #cbd5e0; border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        th { background: #34495e; color: white; border: 1px solid #4a5568; padding: 8px 4px; position: sticky; top: 0; z-index: 5; }
+        td { border: 1px solid #cbd5e0; text-align: center; padding: 5px; font-weight: 800; color: #2d3748; }
         
-        .subtotal-col { background: #e3f2fd !important; color: #1565c0; border: 1px solid #bbdefb; }
-        .final-col { background: #e8f5e9 !important; color: #2e7d32; border: 1px solid #c8e6c9; }
+        .sticky-col { position: sticky; right: 0; background: #f7fafc; z-index: 10; border-left: 3px solid #718096 !important; }
+        .subtotal-col { background: #ebf8ff !important; color: #2b6cb0; }
+        .final-col { background: #f0fff4 !important; color: #27ae60; border: 1px solid #c6f6d5; }
         
-        .score-input { width: 42px; border: 1px solid #bdc3c7; text-align: center; border-radius: 4px; padding: 5px 0; font-weight: bold; }
-        .score-input:focus { border-color: var(--accent); background: #f0fdfa; outline: none; }
-
-        .footer-marquee { position: fixed; bottom: 0; width: 100%; background: var(--primary); color: white; padding: 6px 0; z-index: 1000; font-weight: bold; }
+        .score-input { width: 45px; border: 1px solid #a0aec0; text-align: center; border-radius: 5px; padding: 6px 0; font-weight: bold; font-size: 1rem; }
+        .score-input:focus { border-color: var(--accent); outline: none; background: #e6fffa; }
+        
+        .footer-marquee { position: fixed; bottom: 0; width: 100%; background: var(--primary); color: white; padding: 8px 0; z-index: 1000; font-weight: bold; font-size: 0.9rem; }
+        
+        .setup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        .export-panel { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
     </style>
 </head>
 <body>
 
 <div class="app-header">
-    <div style="font-size: 1.1rem; font-weight: bold;"><i class="fas fa-layer-group"></i> منظومة الرصد الذكية - التقرير الختامي الصارم</div>
-    <button class="tab-btn" style="background:var(--success); color:white; border-radius: 5px;" onclick="saveData(true)"><i class="fas fa-save"></i> حفظ التغييرات</button>
+    <div style="font-size: 1.3rem; font-weight: 900;"><i class="fas fa-graduation-cap"></i> منظومة الرصد الذكية - النسخة الشاملة</div>
+    <button class="tab-btn" style="background:var(--success); color:white; border-radius: 8px; border:none;" onclick="saveData(true)"><i class="fas fa-save"></i> حفظ البيانات</button>
 </div>
 
 <div class="tabs" id="mainTabs" style="display:none;">
     <button class="tab-btn active" onclick="switchTab('grading')">الرصد الأسبوعي</button>
-    <button class="tab-btn" onclick="switchTab('fullSheet')">الشيت الكامل</button>
+    <button class="tab-btn" onclick="switchTab('fullSheet')">الشيت الكامل (70)</button>
     <button class="tab-btn" onclick="switchTab('export')">تصدير مخصص</button>
-    <button class="tab-btn" onclick="switchTab('tools')">الأدوات</button>
+    <button class="tab-btn" onclick="switchTab('tools')">الإعدادات</button>
 </div>
 
 <div class="container">
     <div id="setup-screen" class="card">
-        <h3><i class="fas fa-database"></i> إعداد المنظومة واستيراد البيانات</h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
-            <input type="text" id="deptName" placeholder="الإدارة التعليمية" class="card" style="padding:12px;">
-            <input type="text" id="schoolName" placeholder="المدرسة" class="card" style="padding:12px;">
-            <input type="text" id="subjectName" placeholder="المادة الدراسية" class="card" style="padding:12px;">
-            <input type="text" id="gradeLevel" placeholder="الصف" class="card" style="padding:12px;">
-            <input type="text" id="classRoom" placeholder="الفصل" class="card" style="padding:12px;">
-            <input type="text" id="teacherName" placeholder="اسم المعلم" class="card" style="padding:12px;">
+        <h3><i class="fas fa-edit"></i> بيانات التقرير الرسمية</h3>
+        <div class="setup-grid">
+            <input type="text" id="deptName" placeholder="الإدارة التعليمية" class="card" style="padding:15px; margin:0">
+            <input type="text" id="schoolName" placeholder="المدرسة" class="card" style="padding:15px; margin:0">
+            <input type="text" id="subjectName" placeholder="المادة" class="card" style="padding:15px; margin:0">
+            <input type="text" id="gradeLevel" placeholder="الصف" class="card" style="padding:15px; margin:0">
+            <input type="text" id="classRoom" placeholder="الفصل" class="card" style="padding:15px; margin:0">
+            <input type="text" id="teacherName" placeholder="اسم المعلم" class="card" style="padding:15px; margin:0">
         </div>
-        <div style="margin-top:20px; border-top: 1px solid #eee; padding-top: 15px;">
-            <label><b>إدارة الأسماء:</b></label>
-            <div style="margin-top:10px;">
+        <div style="margin-top:20px;">
+            <label><b>إدخال أسماء الطلاب:</b></label>
+            <div style="margin: 10px 0;">
+                <button onclick="document.getElementById('fileImport').click()" class="tab-btn" style="background:#3182ce; color:white;"><i class="fas fa-file-excel"></i> استيراد من Excel/Txt</button>
                 <input type="file" id="fileImport" accept=".xlsx, .xls, .txt" style="display:none;" onchange="handleFileImport(this)">
-                <button onclick="document.getElementById('fileImport').click()" class="tab-btn" style="background:#2980b9; color:white;"><i class="fas fa-file-excel"></i> استيراد من ملف</button>
             </div>
-            <textarea id="namesArea" class="card" style="width:100%; height:150px; margin-top:10px; border:1px solid #cbd5e0;" placeholder="أدخل الأسماء هنا (اسم في كل سطر)"></textarea>
+            <textarea id="namesArea" class="card" style="width:100%; height:180px; margin-top:10px; border: 2px solid #e2e8f0;" placeholder="أدخل الأسماء هنا.. اسم في كل سطر"></textarea>
         </div>
-        <button class="tab-btn" style="width:100%; background:var(--primary); color:white; padding:18px; font-size:1.2rem; margin-top:10px;" onclick="initializeSystem()">تشغيل المنظومة الآن</button>
+        <button class="tab-btn" style="width:100%; background:var(--primary); color:white; padding:20px; font-size:1.3rem;" onclick="initializeSystem()">تشغيل المنظومة والبدء في الرصد</button>
     </div>
 
     <div id="grading-screen" style="display:none;">
-        <div id="infoBar" class="card" style="background:#e3f2fd; color:#0d47a1; font-weight:bold; border-right: 5px solid #2196f3;"></div>
-        <select id="weekPicker" class="card" style="width:100%; font-size:1.1rem; padding:12px;" onchange="renderWeeklyList()"></select>
+        <div id="infoBar" class="card" style="background:#ebf8ff; color:#2c5282; font-weight:bold; border-right: 6px solid #3182ce;"></div>
+        <select id="weekPicker" class="card" style="width:100%; font-size:1.1rem; border:2px solid #cbd5e0" onchange="renderWeeklyList()"></select>
         <div id="weeklyList"></div>
     </div>
 
@@ -82,35 +85,34 @@
     </div>
 
     <div id="export-screen" class="card" style="display:none;">
-        <h3><i class="fas fa-file-export"></i> لوحة التحكم في التصدير</h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-            <div class="card" style="border: 1px solid #ddd;">
-                <h4><i class="fas fa-users"></i> نطاق الطلاب</h4>
-                من الطالب رقم: <input type="number" id="stStart" value="1" style="width:70px; padding:5px;"> <br><br>
-                إلى الطالب رقم: <input type="number" id="stEnd" style="width:70px; padding:5px;">
+        <h3><i class="fas fa-print"></i> تخصيص واستخراج التقارير</h3>
+        <div class="export-panel">
+            <div class="card" style="border: 1px solid #cbd5e0;">
+                <h4>نطاق الطلاب</h4>
+                من الطالب رقم: <input type="number" id="stStart" value="1" style="width:70px"> 
+                إلى الطالب رقم: <input type="number" id="stEnd" style="width:70px">
             </div>
-            <div class="card" style="border: 1px solid #ddd;">
-                <h4><i class="fas fa-calendar-check"></i> الأسابيع المشمولة</h4>
-                <div id="exportWeeks" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;"></div>
+            <div class="card" style="border: 1px solid #cbd5e0;">
+                <h4>الأسابيع المشمولة في التقرير</h4>
+                <div id="exportWeeks" style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;"></div>
             </div>
-            <div class="card" style="border: 1px solid #ddd; text-align: center;">
-                <h4><i class="fas fa-check-circle"></i> تنفيذ التصدير</h4>
-                <button class="tab-btn" style="width:100%; background:var(--success); color:white; margin-bottom:10px;" onclick="runExport('xlsx')"><i class="fas fa-file-excel"></i> تصدير Excel</button>
-                <button class="tab-btn" style="width:100%; background:var(--danger); color:white;" onclick="runExport('pdf')"><i class="fas fa-file-pdf"></i> تصدير PDF رسمي</button>
+            <div class="card" style="border: 1px solid #cbd5e0; display:flex; flex-direction:column; gap:10px;">
+                <button class="tab-btn" style="background:var(--success); color:white;" onclick="runExport('xlsx')"><i class="fas fa-file-excel"></i> تصدير إكسيل (بيانات كاملة)</button>
+                <button class="tab-btn" style="background:var(--danger); color:white;" onclick="runExport('pdf')"><i class="fas fa-file-pdf"></i> تصدير PDF (نسخة الطباعة)</button>
             </div>
         </div>
     </div>
 
     <div id="tools-screen" class="card" style="display:none;">
-        <button class="tab-btn" style="width:100%; margin-bottom:10px;" onclick="backupJSON()">تصدير نسخة JSON للنسخ الاحتياطي</button>
-        <button class="tab-btn" style="width:100%; background:var(--danger); color:white;" onclick="resetSystem()">مسح كافة البيانات وإعادة التصفير</button>
+        <button class="tab-btn" style="width:100%; margin-bottom:10px;" onclick="backupJSON()">حفظ نسخة احتياطية (JSON)</button>
+        <button class="tab-btn" style="width:100%; background:var(--danger); color:white;" onclick="resetSystem()">حذف كافة البيانات نهائياً</button>
     </div>
 </div>
 
 <div id="pdf-container" style="display:none; background:white; padding:30px;"></div>
 
 <div class="footer-marquee">
-    <marquee direction="right">بواسطة الأستاذ: محمود عادل صالح | هاتف: ٠١٥٥٢٤٠٢٩١٢ | منظومة الرصد الذكية لدرجات الطالب</marquee>
+    <marquee direction="right">بواسطة الأستاذ: محمود عادل صالح | هاتف: ٠١٥٥٢٤٠٢٩١٢ | منظومة الرصد الذكية الشاملة (جميع الحقوق محفوظة)</marquee>
 </div>
 
 <script>
@@ -128,45 +130,36 @@
     function handleFileImport(input) {
         const file = input.files[0];
         const reader = new FileReader();
-        if(file.name.endsWith('.txt')) {
-            reader.onload = (e) => document.getElementById('namesArea').value = e.target.result;
-            reader.readAsText(file);
-        } else {
-            reader.onload = (e) => {
+        reader.onload = (e) => {
+            if(file.name.endsWith('.txt')) document.getElementById('namesArea').value = e.target.result;
+            else {
                 const workbook = XLSX.read(new Uint8Array(e.target.result), {type: 'array'});
-                const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                const names = XLSX.utils.sheet_to_json(sheet, {header:1}).map(r => r[0]).filter(n => n);
+                const names = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header:1}).map(r => r[0]).filter(n => n);
                 document.getElementById('namesArea').value = names.join('\n');
-            };
-            reader.readAsArrayBuffer(file);
-        }
+            }
+        };
+        if(file.name.endsWith('.txt')) reader.readAsText(file); else reader.readAsArrayBuffer(file);
     }
 
     function initializeSystem() {
-        const rawNames = document.getElementById('namesArea').value.trim();
-        if(!rawNames) return alert("الرجاء إدخال أسماء الطلاب أولاً");
-        
-        students = rawNames.split('\n').map(n => n.trim()).filter(n => n);
-        settings = {
-            dept: document.getElementById('deptName').value || '.......',
-            school: document.getElementById('schoolName').value || '.......',
-            subject: document.getElementById('subjectName').value || '.......',
-            grade: document.getElementById('gradeLevel').value || '.......',
-            class: document.getElementById('classRoom').value || '.......',
-            teacher: document.getElementById('teacherName').value || '.......'
+        const raw = document.getElementById('namesArea').value.trim();
+        if(!raw) return alert("الرجاء إدخال الأسماء أولاً");
+        students = raw.split('\n').map(n => n.trim()).filter(n => n);
+        settings = { 
+            dept: document.getElementById('deptName').value || '........', 
+            school: document.getElementById('schoolName').value || '........', 
+            subject: document.getElementById('subjectName').value || '........', 
+            grade: document.getElementById('gradeLevel').value || '........', 
+            class: document.getElementById('classRoom').value || '........', 
+            teacher: document.getElementById('teacherName').value || '........' 
         };
-
         students.forEach((_, i) => { if(!db[i]) db[i] = {}; });
-        
         document.getElementById('setup-screen').style.display = 'none';
         document.getElementById('mainTabs').style.display = 'flex';
         document.getElementById('stEnd').value = students.length;
-        
         document.getElementById('weekPicker').innerHTML = WEEKS.map(w => `<option value="${w.id}">${w.n}</option>`).join('');
         document.getElementById('exportWeeks').innerHTML = WEEKS.map(w => `<div><input type="checkbox" class="exp-w-chk" value="${w.id}" checked> ${w.n}</div>`).join('');
-        
-        document.getElementById('infoBar').innerHTML = `<i class="fas fa-info-circle"></i> ${settings.subject} | ${settings.grade} | فصل: ${settings.class} | أ/ ${settings.teacher}`;
-        
+        document.getElementById('infoBar').innerText = `${settings.subject} | الصف: ${settings.grade} | فصل: ${settings.class} | أ/ ${settings.teacher}`;
         switchTab('grading');
         saveData();
     }
@@ -182,13 +175,7 @@
 
     function updateVal(idx, wid, field, val) {
         if(!db[idx][wid]) db[idx][wid] = {t:'', v:'', s:''};
-        let n = val === '' ? '' : parseFloat(val);
-        const wInfo = WEEKS.find(w=>w.id===wid);
-        if(field==='t') n = Math.min(n, wInfo.isEx ? 30 : 15);
-        if(field==='v') n = Math.min(n, 15);
-        if(field==='s') n = Math.min(n, 10);
-        
-        db[idx][wid][field] = n;
+        db[idx][wid][field] = val === '' ? '' : parseFloat(val);
         saveData();
     }
 
@@ -198,14 +185,13 @@
         let h = '';
         students.forEach((name, i) => {
             const d = db[i][wid] || {t:'', v:'', s:''};
-            h += `
-            <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:10px; border:1px solid #eee;">
-                <span><b>${i+1}.</b> ${name}</span>
-                <div style="display:flex; gap:10px;">
-                    <div style="text-align:center"><small style="display:block">ت</small><input type="number" class="score-input" value="${d.t}" onchange="updateVal(${i},'${wid}','t',this.value)"></div>
+            h += `<div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid #edf2f7;">
+                <span style="font-size:1.1rem;"><b>${i+1}.</b> ${name}</span>
+                <div style="display:flex; gap:12px;">
+                    <div style="text-align:center"><small style="display:block; color:#718096">ت</small><input type="number" class="score-input" value="${d.t}" onchange="updateVal(${i},'${wid}','t',this.value)"></div>
                     ${!isEx ? `
-                    <div style="text-align:center"><small style="display:block">ح</small><input type="number" class="score-input" value="${d.v}" onchange="updateVal(${i},'${wid}','v',this.value)"></div>
-                    <div style="text-align:center"><small style="display:block">س</small><input type="number" class="score-input" value="${d.s}" onchange="updateVal(${i},'${wid}','s',this.value)"></div>
+                    <div style="text-align:center"><small style="display:block; color:#718096">ح</small><input type="number" class="score-input" value="${d.v}" onchange="updateVal(${i},'${wid}','v',this.value)"></div>
+                    <div style="text-align:center"><small style="display:block; color:#718096">س</small><input type="number" class="score-input" value="${d.s}" onchange="updateVal(${i},'${wid}','s',this.value)"></div>
                     ` : ''}
                 </div>
             </div>`;
@@ -213,146 +199,128 @@
         document.getElementById('weeklyList').innerHTML = h;
     }
 
-    // الحساب الختامي الصارم (متوسط الكل)
-    function calcStrictFinal(idx) {
-        let sumT=0, sumV=0, sumS=0, countW=0;
-        let sumEx=0, countEx=0;
+    function calculateStats(idx, type) {
+        let list = [];
+        if(type === 'p1') list = [0,1,2,3,4];
+        else if(type === 'p2') list = [6,7,8,9,10];
+        else list = [0,1,2,3,4,6,7,8,9,10,12,13]; // الكل ماعدا الاختبارات
 
-        WEEKS.forEach(w => {
-            const d = db[idx][w.id] || {t:'', v:'', s:''};
-            if(!w.isEx) {
-                sumT += (parseFloat(d.t) || 0);
-                sumV += (parseFloat(d.v) || 0);
-                sumS += (parseFloat(d.s) || 0);
-                countW++;
-            } else {
-                sumEx += (parseFloat(d.t) || 0);
-                countEx++;
-            }
+        let t=0, v=0, s=0, c=0;
+        list.forEach(i => {
+            const d = db[idx][WEEKS[i].id] || {t:'', v:'', s:''};
+            t += (parseFloat(d.t)||0); v += (parseFloat(d.v)||0); s += (parseFloat(d.s)||0); c++;
         });
-
-        const avgT = sumT / (countW || 1);
-        const avgV = sumV / (countW || 1);
-        const avgS = sumS / (countW || 1);
-        const avgEx = sumEx / (countEx || 1);
-        
-        return {
-            t: avgT, v: avgV, s: avgS, ex: avgEx,
-            total: (avgT + avgV + avgS + avgEx).toFixed(1)
-        };
+        const div = c || 1;
+        return { t: t/div, v: v/div, s: s/div, m: (t+v+s)/div };
     }
 
     function renderFullSheet() {
         let h = `<table><thead><tr><th rowspan="2" class="sticky-col">الأسماء</th>`;
         WEEKS.forEach(w => h += `<th colspan="${w.isEx?1:3}">${w.n}</th>`);
-        h += `<th colspan="5" class="final-col">التقييم النهائي (70)</th></tr><tr>`;
-        
-        WEEKS.forEach(w => {
-            if(w.isEx) h += `<th>درجة</th>`;
-            else h += `<th>ت</th><th>ح</th><th>س</th>`;
-        });
-        // ترويسات النهائي الصارم
-        h += `<th>ت (15)</th><th>ح (15)</th><th>س (10)</th><th>اختبار (30)</th><th>مجموع</th></tr></thead><tbody>`;
+        h += `<th colspan="4" class="subtotal-col">ف1 (40)</th><th colspan="4" class="subtotal-col">ف2 (40)</th><th colspan="5" class="final-col">النهائي (70)</th></tr><tr>`;
+        WEEKS.forEach(w => { if(w.isEx) h += `<th>درجة</th>`; else h += `<th>ت</th><th>ح</th><th>س</th>`; });
+        for(let j=0; j<2; j++) h += `<th>ت</th><th>ح</th><th>س</th><th>م</th>`;
+        h += `<th>ت</th><th>ح</th><th>س</th><th>اختبار</th><th>مجموع</th></tr></thead><tbody>`;
 
         students.forEach((name, i) => {
-            const final = calcStrictFinal(i);
+            const p1 = calculateStats(i, 'p1');
+            const p2 = calculateStats(i, 'p2');
+            const total = calculateStats(i, 'all');
+            const ex = ((parseFloat(db[i].ex1?.t)||0) + (parseFloat(db[i].ex2?.t)||0)) / 2;
+
             h += `<tr><td class="sticky-col" style="text-align:right">${name}</td>`;
             WEEKS.forEach(w => {
                 const d = db[i][w.id] || {t:'', v:'', s:''};
                 h += `<td>${d.t}</td>`;
                 if(!w.isEx) h += `<td>${d.v}</td><td>${d.s}</td>`;
             });
-            h += `<td class="final-col">${final.t.toFixed(1)}</td>
-                  <td class="final-col">${final.v.toFixed(1)}</td>
-                  <td class="final-col">${final.s.toFixed(1)}</td>
-                  <td class="final-col">${final.ex.toFixed(1)}</td>
-                  <td class="final-col" style="background:#c8e6c9 !important;">${final.total}</td></tr>`;
+            h += `<td class="subtotal-col">${p1.t.toFixed(1)}</td><td class="subtotal-col">${p1.v.toFixed(1)}</td><td class="subtotal-col">${p1.s.toFixed(1)}</td><td class="subtotal-col">${p1.m.toFixed(1)}</td>`;
+            h += `<td class="subtotal-col">${p2.t.toFixed(1)}</td><td class="subtotal-col">${p2.v.toFixed(1)}</td><td class="subtotal-col">${p2.s.toFixed(1)}</td><td class="subtotal-col">${p2.m.toFixed(1)}</td>`;
+            h += `<td class="final-col">${total.t.toFixed(1)}</td><td class="final-col">${total.v.toFixed(1)}</td><td class="final-col">${total.s.toFixed(1)}</td><td class="final-col">${ex.toFixed(1)}</td><td class="final-col" style="background:#c6f6d5 !important;">${(total.m + ex).toFixed(1)}</td></tr>`;
         });
         document.getElementById('fullSheetTable').innerHTML = h + `</tbody></table>`;
     }
 
     async function runExport(type) {
-        const start = (parseInt(document.getElementById('stStart').value) || 1) - 1;
-        const end = parseInt(document.getElementById('stEnd').value) || students.length;
-        const selectedWids = Array.from(document.querySelectorAll('.exp-w-chk:checked')).map(c => c.value);
-        
-        let header = `
-            <div dir="rtl" style="margin-bottom:15px;">
-                <table style="width:100%; border:none; font-weight:bold;">
+        const start = (parseInt(document.getElementById('stStart').value)||1)-1;
+        const end = parseInt(document.getElementById('stEnd').value)||students.length;
+        const selWids = Array.from(document.querySelectorAll('.exp-w-chk:checked')).map(c => c.value);
+
+        if(type === 'pdf') {
+            let hHTML = `<div dir="rtl" style="margin-bottom:20px; border:2px solid #000; padding:10px;">
+                <table style="width:100%; border:none;">
                     <tr><td>إدارة: ${settings.dept}</td><td style="text-align:center">المادة: ${settings.subject}</td><td style="text-align:left">المعلم: ${settings.teacher}</td></tr>
                     <tr><td>مدرسة: ${settings.school}</td><td style="text-align:center">الصف: ${settings.grade}</td><td style="text-align:left">الفصل: ${settings.class}</td></tr>
                 </table>
-                <h2 style="text-align:center; text-decoration:underline;">كشف رصد الدرجات الرسمي</h2>
+                <h2 style="text-align:center; margin:10px 0;">كشف رصد درجات الطالب</h2>
             </div>`;
-
-        let table = `<table border="1" dir="rtl" style="width:100%; border-collapse:collapse; text-align:center; font-size:11px;">
-            <thead><tr style="background:#eee;"><th>م</th><th>الاسم</th>`;
-        selectedWids.forEach(wid => {
-            const w = WEEKS.find(x => x.id === wid);
-            table += `<th colspan="${w.isEx?1:3}">${w.n}</th>`;
-        });
-        table += `<th>المجموع</th></tr><tr style="background:#eee;"><th></th><th></th>`;
-        selectedWids.forEach(wid => {
-            const w = WEEKS.find(x => x.id === wid);
-            if(w.isEx) table += `<th>درجة</th>`;
-            else table += `<th>ت</th><th>ح</th><th>س</th>`;
-        });
-        table += `<th>(70)</th></tr></thead><tbody>`;
-
-        for(let i=start; i<end; i++) {
-            if(!students[i]) continue;
-            const res = calcStrictFinal(i);
-            table += `<tr><td>${i+1}</td><td style="text-align:right; padding:2px 5px;">${students[i]}</td>`;
-            selectedWids.forEach(wid => {
-                const w = WEEKS.find(x => x.id === wid);
-                const d = db[i][wid] || {t:'', v:'', s:''};
-                table += `<td>${d.t}</td>`;
-                if(!w.isEx) table += `<td>${d.v}</td><td>${d.s}</td>`;
+            
+            let tHTML = `<table border="1" style="width:100%; border-collapse:collapse; text-align:center; font-size:9px;"><thead><tr><th>م</th><th>الاسم</th>`;
+            selWids.forEach(wid => {
+                const w = WEEKS.find(x=>x.id===wid);
+                tHTML += `<th colspan="${w.isEx?1:3}">${w.n}</th>`;
             });
-            table += `<td style="font-weight:bold; background:#f9f9f9;">${res.total}</td></tr>`;
-        }
-        table += `</tbody></table>`;
+            tHTML += `<th>المجموع</th></tr></thead><tbody>`;
 
-        if(type === 'pdf') {
+            for(let i=start; i<end; i++) {
+                if(!students[i]) continue;
+                const stats = calculateStats(i, 'all');
+                const ex = ((parseFloat(db[i].ex1?.t)||0) + (parseFloat(db[i].ex2?.t)||0)) / 2;
+                tHTML += `<tr><td>${i+1}</td><td style="text-align:right; padding-right:5px;">${students[i]}</td>`;
+                selWids.forEach(wid => {
+                    const w = WEEKS.find(x=>x.id===wid);
+                    const d = db[i][wid] || {t:'',v:'',s:''};
+                    tHTML += `<td>${d.t}</td>`;
+                    if(!w.isEx) tHTML += `<td>${d.v}</td><td>${d.s}</td>`;
+                });
+                tHTML += `<td>${(stats.m + ex).toFixed(1)}</td></tr>`;
+            }
             const container = document.getElementById('pdf-container');
-            container.innerHTML = header + table;
+            container.innerHTML = hHTML + tHTML + `</tbody></table>`;
             container.style.display = 'block';
-            const opt = { margin: 0.3, filename: `درجات_${settings.class}.pdf`, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' } };
-            await html2pdf().set(opt).from(container).save();
+            await html2pdf().set({ margin:0.3, filename:`رصد_${settings.class}.pdf`, jsPDF:{orientation:'landscape'} }).from(container).save();
             container.style.display = 'none';
         } else {
-            const wb = XLSX.utils.book_new();
+            // تصدير إكسيل مطور ببيانات كاملة
             const wsData = [
-                [`إدارة: ${settings.dept}`, "", `المادة: ${settings.subject}`, "", `المعلم: ${settings.teacher}`],
-                [`مدرسة: ${settings.school}`, "", `الصف: ${settings.grade}`, "", `الفصل: ${settings.class}`],
+                [`إدارة: ${settings.dept}`, "", `المدرسة: ${settings.school}`, "", `المعلم: ${settings.teacher}`],
+                [`المادة: ${settings.subject}`, "", `الصف: ${settings.grade}`, "", `الفصل: ${settings.class}`],
                 [],
-                ["م", "الاسم", ...selectedWids.map(wid => WEEKS.find(x=>x.id===wid).n), "المجموع النهائي"]
+                ["م", "الاسم"]
             ];
+            // بناء رأس الجدول للإكسيل
+            selWids.forEach(wid => {
+                const w = WEEKS.find(x=>x.id===wid);
+                wsData[3].push(w.n + (w.isEx ? "" : " - ت"));
+                if(!w.isEx) { wsData[3].push(w.n + " - ح"); wsData[3].push(w.n + " - س"); }
+            });
+            wsData[3].push("المجموع النهائي (70)");
+
             for(let i=start; i<end; i++) {
                 if(!students[i]) continue;
                 const row = [i+1, students[i]];
-                selectedWids.forEach(wid => row.push(db[i][wid]?.t || '0'));
-                row.push(calcStrictFinal(i).total);
+                selWids.forEach(wid => {
+                    const w = WEEKS.find(x=>x.id===wid);
+                    const d = db[i][wid] || {t:'',v:'',s:''};
+                    row.push(d.t); if(!w.isEx) { row.push(d.v); row.push(d.s); }
+                });
+                const stats = calculateStats(i, 'all');
+                const ex = ((parseFloat(db[i].ex1?.t)||0) + (parseFloat(db[i].ex2?.t)||0)) / 2;
+                row.push((stats.m + ex).toFixed(1));
                 wsData.push(row);
             }
             const ws = XLSX.utils.aoa_to_sheet(wsData);
-            XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-            XLSX.writeFile(wb, `رصد_${settings.class}.xlsx`);
+            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "الدرجات");
+            XLSX.writeFile(wb, `رصد_كامل_${settings.class}.xlsx`);
         }
     }
 
-    function saveData(notify=false) { 
-        localStorage.setItem('mahmoud_final_v5', JSON.stringify({students, db, settings})); 
-        if(notify) alert("تم تأمين وحفظ البيانات بنجاح");
-    }
-
-    function resetSystem() { if(confirm("تحذير: سيتم حذف جميع الدرجات والأسماء نهائياً! هل أنت متأكد؟")) { localStorage.clear(); location.reload(); } }
-
+    function saveData(n=false) { localStorage.setItem('mahmoud_ultra_final_v1', JSON.stringify({students, db, settings})); if(n) alert("تم حفظ البيانات بنجاح!"); }
+    function resetSystem() { if(confirm("حذف كل البيانات؟")) { localStorage.clear(); location.reload(); } }
     window.onload = () => {
-        const saved = localStorage.getItem('mahmoud_final_v5');
+        const saved = localStorage.getItem('mahmoud_ultra_final_v1');
         if(saved) {
-            const data = JSON.parse(saved);
-            students = data.students; db = data.db; settings = data.settings;
+            const d = JSON.parse(saved); students = d.students; db = d.db; settings = d.settings;
             document.getElementById('deptName').value = settings.dept;
             document.getElementById('schoolName').value = settings.school;
             document.getElementById('subjectName').value = settings.subject;

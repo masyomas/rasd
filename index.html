@@ -3,279 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منظومة الرصد الذكية - نسخة التصدير المتقدم</title>
+    <title>منظومة الرصد الذكية الشاملة - أ/ محمود عادل</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        :root {
-            --primary: #2c3e50;
-            --accent: #1abc9c;
-            --danger: #e74c3c;
-            --success: #27ae60;
-            --bg: #f0f2f5;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            margin: 0;
-            padding-bottom: 80px;
-            direction: rtl;
-        }
-
-        /* تنسيق الهيدر */
-        .app-header {
-            background: var(--primary);
-            color: white;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 5px;
-            padding: 10px;
-            overflow-x: auto;
-            background: white;
-            border-bottom: 2px solid #e2e8f0;
-        }
-
-        .tab-btn {
-            padding: 10px 18px;
-            border: none;
-            background: #edf2f7;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: bold;
-            white-space: nowrap;
-        }
-
+        :root { --primary: #2c3e50; --accent: #1abc9c; --danger: #e74c3c; --success: #27ae60; --bg: #f0f2f5; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; direction: rtl; padding-bottom: 60px; }
+        
+        .app-header { background: var(--primary); color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .tabs { display: flex; gap: 5px; padding: 10px; overflow-x: auto; background: white; border-bottom: 2px solid #ddd; }
+        .tab-btn { padding: 10px 20px; border: none; background: #eee; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap; }
         .tab-btn.active { background: var(--accent); color: white; }
+        
+        .container { width: 98%; max-width: 1600px; margin: 15px auto; }
+        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        
+        /* جداول الشيت الكامل */
+        .table-scroll { overflow-x: auto; max-height: 70vh; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { background: #34495e; color: white; border: 1px solid #455a64; padding: 8px 4px; position: sticky; top: 0; z-index: 5; }
+        td { border: 1px solid #cfd8dc; text-align: center; padding: 4px; font-weight: bold; }
+        .sticky-col { position: sticky; right: 0; background: #f8f9fa; z-index: 10; border-left: 2px solid #999 !important; }
+        
+        .subtotal-col { background: #e3f2fd !important; color: #1565c0; }
+        .final-col { background: #e8f5e9 !important; color: #2e7d32; }
+        
+        .score-input { width: 45px; border: 1px solid #ccc; text-align: center; border-radius: 4px; padding: 4px 0; font-weight: bold; }
+        .score-input:focus { border-color: var(--accent); background: #e0f2f1; outline: none; }
 
-        .container { width: 95%; max-width: 1400px; margin: 15px auto; }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-
-        /* جداول الرصد */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
-        th { background: #34495e; color: white; padding: 10px; border: 1px solid #dee2e6; font-size: 0.9rem; }
-        td { padding: 8px; border: 1px solid #dee2e6; text-align: center; }
-
-        .score-input, .grid-input {
-            width: 50px;
-            padding: 5px;
-            border: 1px solid #cbd5e0;
-            border-radius: 4px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        /* قسم التصدير المخصص */
-        .export-panel {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            background: #f8fafc;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .check-group { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
-
-        /* ترويسة التقرير الرسمي */
-        .report-header {
-            display: none; /* تظهر فقط عند التصدير */
-            width: 100%;
-            margin-bottom: 20px;
-        }
-        .report-header-table { width: 100%; border: none !important; }
-        .report-header-table td { border: none !important; text-align: right; font-weight: bold; width: 33%; }
-
-        @media print {
-            .no-print { display: none; }
-            .report-header { display: block; }
-        }
-
-        .footer-marquee {
-            position: fixed; bottom: 0; width: 100%;
-            background: var(--primary); color: white;
-            padding: 8px 0; z-index: 1000;
-        }
+        /* التصدير */
+        .export-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .week-picker { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; background: #f9f9f9; padding: 10px; border-radius: 8px; }
+        
+        .footer-marquee { position: fixed; bottom: 0; width: 100%; background: var(--primary); color: white; padding: 5px 0; z-index: 1000; }
     </style>
 </head>
 <body>
 
 <div class="app-header">
-    <div>
-        <i class="fas fa-graduation-cap"></i>
-        <span style="font-weight: bold;">منظومة الرصد الذكية</span>
-    </div>
-    <button class="btn" style="background:var(--success); color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;" onclick="saveData()">
-        <i class="fas fa-save"></i> حفظ
-    </button>
+    <div style="font-size: 1.2rem; font-weight: bold;"><i class="fas fa-microchip"></i> منظومة الرصد الذكية الشاملة</div>
+    <button class="tab-btn" style="background:var(--success); color:white;" onclick="saveData(true)"><i class="fas fa-save"></i> حفظ البيانات</button>
 </div>
 
-<div class="tabs" id="appTabs" style="display:none;">
+<div class="tabs" id="mainTabs" style="display:none;">
     <button class="tab-btn active" onclick="switchTab('grading')">الرصد الأسبوعي</button>
-    <button class="tab-btn" onclick="switchTab('fullSheet')">الشيت الكامل</button>
+    <button class="tab-btn" onclick="switchTab('fullSheet')">الشيت الكامل (70)</button>
     <button class="tab-btn" onclick="switchTab('export')">تصدير مخصص (PDF/Excel)</button>
-    <button class="tab-btn" onclick="switchTab('tools')">الإعدادات</button>
+    <button class="tab-btn" onclick="switchTab('tools')">الأدوات</button>
 </div>
 
 <div class="container">
     <div id="setup-screen" class="card">
-        <h3><i class="fas fa-cogs"></i> تهيئة النظام واستيراد الأسماء</h3>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-            <input type="text" id="schoolName" placeholder="المدرسة" class="card" style="padding:10px; margin:0">
-            <input type="text" id="deptName" placeholder="الإدارة التعليمية" class="card" style="padding:10px; margin:0">
-            <input type="text" id="subjectName" placeholder="المادة" class="card" style="padding:10px; margin:0">
-            <input type="text" id="gradeLevel" placeholder="الصف" class="card" style="padding:10px; margin:0">
-            <input type="text" id="classRoom" placeholder="الفصل" class="card" style="padding:10px; margin:0">
-            <input type="text" id="teacherName" placeholder="اسم المعلم" class="card" style="padding:10px; margin:0">
+        <h3><i class="fas fa-edit"></i> بيانات المنظومة والاستيراد</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+            <input type="text" id="deptName" placeholder="الإدارة التعليمية" class="card" style="padding:10px;">
+            <input type="text" id="schoolName" placeholder="المدرسة" class="card" style="padding:10px;">
+            <input type="text" id="subjectName" placeholder="المادة" class="card" style="padding:10px;">
+            <input type="text" id="gradeLevel" placeholder="الصف" class="card" style="padding:10px;">
+            <input type="text" id="classRoom" placeholder="الفصل" class="card" style="padding:10px;">
+            <input type="text" id="teacherName" placeholder="اسم المعلم" class="card" style="padding:10px;">
         </div>
-        
-        <div style="margin-bottom: 15px;">
-            <label style="display: block; margin-bottom: 5px; font-weight: bold;">استيراد الأسماء:</label>
-            <div style="display: flex; gap: 10px;">
-                <input type="file" id="importFile" accept=".xlsx, .xls, .txt" style="display: none;" onchange="handleImport(this)">
-                <button onclick="document.getElementById('importFile').click()" class="tab-btn" style="background: #3498db; color: white;">
-                    <i class="fas fa-file-import"></i> استيراد من ملف (Excel/Text)
-                </button>
-            </div>
-            <textarea id="namesList" class="card" style="width:100%; height:120px; margin-top:10px;" placeholder="أو أدخل الأسماء يدوياً هنا (اسم في كل سطر)"></textarea>
+        <div style="margin-top:20px;">
+            <label><b>استيراد الأسماء:</b></label>
+            <input type="file" id="fileImport" accept=".xlsx, .xls, .txt" style="display:none;" onchange="handleFileImport(this)">
+            <button onclick="document.getElementById('fileImport').click()" class="tab-btn" style="background:#3498db; color:white;"><i class="fas fa-upload"></i> ملف إكسيل أو نصي</button>
+            <textarea id="namesArea" class="card" style="width:100%; height:150px; margin-top:10px;" placeholder="أو الصق الأسماء هنا.. اسم في كل سطر"></textarea>
         </div>
-        
-        <button class="tab-btn" style="width:100%; background:var(--primary); color:white; padding:15px;" onclick="initApp()">تشغيل المنظومة</button>
+        <button class="tab-btn" style="width:100%; background:var(--primary); color:white; padding:15px; font-size:1.1rem;" onclick="initializeSystem()">بدء العمل على المنظومة</button>
     </div>
 
     <div id="grading-screen" style="display:none;">
-        <div id="infoSummary" class="card" style="background: #e1f5fe;"></div>
-        <select id="weekSelect" class="card" style="width:100%;" onchange="renderStudents()"></select>
-        <div id="studentsContainer"></div>
+        <div id="infoBar" class="card" style="background:#e0f7fa; font-weight:bold;"></div>
+        <select id="weekPicker" class="card" style="width:100%; font-size:1rem;" onchange="renderWeeklyList()"></select>
+        <div id="weeklyList"></div>
     </div>
 
-    <div id="fullSheet-screen" class="card" style="display:none; overflow-x: auto;">
-        <div id="fullSheetContainer"></div>
+    <div id="fullSheet-screen" class="card" style="display:none;">
+        <div class="table-scroll" id="fullSheetTable"></div>
     </div>
 
     <div id="export-screen" class="card" style="display:none;">
-        <h3><i class="fas fa-file-export"></i> تخصيص ملف التصدير</h3>
-        
-        <div class="export-panel">
-            <div>
-                <label><b>نطاق الطلاب:</b></label><br>
-                من: <input type="number" id="expStart" value="1" style="width:50px"> 
-                إلى: <input type="number" id="expEnd" style="width:50px">
+        <h3><i class="fas fa-print"></i> لوحة التصدير المخصص</h3>
+        <div class="export-grid">
+            <div class="card">
+                <h4>1. نطاق الطلاب</h4>
+                من رقم: <input type="number" id="stStart" value="1" style="width:60px"> 
+                إلى رقم: <input type="number" id="stEnd" style="width:60px">
             </div>
-            <div>
-                <label><b>الأعمدة المطلوبة:</b></label>
-                <div id="weekCheckboxes" style="max-height: 150px; overflow-y: auto; margin-top: 10px;"></div>
+            <div class="card">
+                <h4>2. اختيار الأسابيع</h4>
+                <div id="exportWeeks" class="week-picker"></div>
             </div>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                <button class="tab-btn" style="background:var(--success); color:white;" onclick="processExport('xlsx')">
-                    <i class="fas fa-file-excel"></i> تصدير Excel
-                </button>
-                <button class="tab-btn" style="background:var(--danger); color:white;" onclick="processExport('pdf')">
-                    <i class="fas fa-file-pdf"></i> تصدير PDF
-                </button>
+            <div class="card">
+                <h4>3. نوع الملف</h4>
+                <button class="tab-btn" style="width:100%; background:var(--success); color:white; margin-bottom:10px;" onclick="runExport('xlsx')"><i class="fas fa-file-excel"></i> تصدير Excel</button>
+                <button class="tab-btn" style="width:100%; background:var(--danger); color:white;" onclick="runExport('pdf')"><i class="fas fa-file-pdf"></i> تصدير PDF ملون</button>
             </div>
         </div>
-
-        <div id="exportPreview" style="margin-top: 20px; overflow-x: auto;">
-            </div>
     </div>
 
     <div id="tools-screen" class="card" style="display:none;">
-        <button class="tab-btn" style="width:100%; margin-bottom:10px;" onclick="exportFullJSON()">نسخة احتياطية كاملة (JSON)</button>
-        <button class="tab-btn" style="width:100%; background:var(--danger); color:white;" onclick="clearSystem()">حذف كل البيانات</button>
+        <button class="tab-btn" style="width:100%; margin-bottom:10px;" onclick="backupJSON()">حفظ نسخة احتياطية JSON</button>
+        <button class="tab-btn" style="width:100%; background:var(--danger); color:white;" onclick="resetSystem()">تصفير المنظومة بالكامل</button>
     </div>
 </div>
 
-<div id="pdf-template" style="display: none; padding: 20px; background: white; min-width: 800px;">
-    <div id="pdf-header-content"></div>
-    <div id="pdf-table-content"></div>
-</div>
+<div id="pdf-container" style="display:none; background:white; padding:20px;"></div>
 
 <div class="footer-marquee">
-    <marquee direction="right">بواسطة الأستاذ: محمود عادل صالح | هاتف: ٠١٥٥٢٤٠٢٩١٢ | نسخة التصدير المخصص الذكية</marquee>
+    <marquee direction="right">بواسطة الأستاذ: محمود عادل صالح | هاتف: ٠١٥٥٢٤٠٢٩١٢ | منظومة الرصد الذكية الشاملة</marquee>
 </div>
 
 <script>
     let students = [];
     let db = {};
     let settings = {};
-    const weeksList = [
-        {id:'w1', n:'أسبوع 1'}, {id:'w2', n:'أسبوع 2'}, {id:'w3', n:'أسبوع 3'}, {id:'w4', n:'أسبوع 4'}, {id:'w5', n:'أسبوع 5'},
-        {id:'ex1', n:'اختبار 1'},
-        {id:'w6', n:'أسبوع 6'}, {id:'w7', n:'أسبوع 7'}, {id:'w8', n:'أسبوع 8'}, {id:'w9', n:'أسبوع 9'}, {id:'w10', n:'أسبوع 10'},
-        {id:'ex2', n:'اختبار 2'},
-        {id:'w11', n:'أسبوع 11'}, {id:'w12', n:'أسبوع 12'}
+    const WEEKS = [
+        {id:'w1', n:'الأسبوع 1'}, {id:'w2', n:'الأسبوع 2'}, {id:'w3', n:'الأسبوع 3'}, {id:'w4', n:'الأسبوع 4'}, {id:'w5', n:'الأسبوع 5'},
+        {id:'ex1', n:'اختبار شهر 1', isEx:true},
+        {id:'w6', n:'الأسبوع 6'}, {id:'w7', n:'الأسبوع 7'}, {id:'w8', n:'الأسبوع 8'}, {id:'w9', n:'الأسبوع 9'}, {id:'w10', n:'الأسبوع 10'},
+        {id:'ex2', n:'اختبار شهر 2', isEx:true},
+        {id:'w11', n:'الأسبوع 11'}, {id:'w12', n:'الأسبوع 12'}
     ];
 
-    // استيراد الملفات
-    function handleImport(input) {
+    function handleFileImport(input) {
         const file = input.files[0];
         const reader = new FileReader();
         if(file.name.endsWith('.txt')) {
-            reader.onload = (e) => document.getElementById('namesList').value = e.target.result;
+            reader.onload = (e) => document.getElementById('namesArea').value = e.target.result;
             reader.readAsText(file);
         } else {
             reader.onload = (e) => {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, {type: 'array'});
+                const workbook = XLSX.read(new Uint8Array(e.target.result), {type: 'array'});
                 const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                const json = XLSX.utils.sheet_to_json(sheet, {header: 1});
-                document.getElementById('namesList').value = json.map(r => r[0]).filter(n => n).join('\n');
+                const names = XLSX.utils.sheet_to_json(sheet, {header:1}).map(r => r[0]).filter(n => n);
+                document.getElementById('namesArea').value = names.join('\n');
             };
             reader.readAsArrayBuffer(file);
         }
     }
 
-    function initApp() {
-        const names = document.getElementById('namesList').value.trim();
-        if(!names) return alert("يرجى إضافة الأسماء أولاً");
+    function initializeSystem() {
+        const rawNames = document.getElementById('namesArea').value.trim();
+        if(!rawNames) return alert("الرجاء إدخال الأسماء");
         
+        students = rawNames.split('\n').map(n => n.trim()).filter(n => n);
         settings = {
-            school: document.getElementById('schoolName').value || '........',
-            dept: document.getElementById('deptName').value || '........',
-            subject: document.getElementById('subjectName').value || '........',
-            grade: document.getElementById('gradeLevel').value || '........',
-            class: document.getElementById('classRoom').value || '........',
-            teacher: document.getElementById('teacherName').value || '........'
+            dept: document.getElementById('deptName').value || '.......',
+            school: document.getElementById('schoolName').value || '.......',
+            subject: document.getElementById('subjectName').value || '.......',
+            grade: document.getElementById('gradeLevel').value || '.......',
+            class: document.getElementById('classRoom').value || '.......',
+            teacher: document.getElementById('teacherName').value || '.......'
         };
 
-        students = names.split('\n').map(n => n.trim()).filter(n => n);
         students.forEach((_, i) => { if(!db[i]) db[i] = {}; });
         
         document.getElementById('setup-screen').style.display = 'none';
-        document.getElementById('appTabs').style.display = 'flex';
-        document.getElementById('expEnd').value = students.length;
+        document.getElementById('mainTabs').style.display = 'flex';
+        document.getElementById('stEnd').value = students.length;
         
-        // بناء قائمة اختيار الأسابيع للتصدير
-        const checkCont = document.getElementById('weekCheckboxes');
-        checkCont.innerHTML = weeksList.map(w => `
-            <div class="check-group">
-                <input type="checkbox" class="week-chk" value="${w.id}" checked> ${w.n}
-            </div>
-        `).join('');
-
-        // ملء قائمة الاختيار في الرصد
-        document.getElementById('weekSelect').innerHTML = weeksList.map(w => `<option value="${w.id}">${w.n}</option>`).join('');
-
+        // بناء القوائم
+        document.getElementById('weekPicker').innerHTML = WEEKS.map(w => `<option value="${w.id}">${w.n}</option>`).join('');
+        document.getElementById('exportWeeks').innerHTML = WEEKS.map(w => `<div><input type="checkbox" class="exp-w-chk" value="${w.id}" checked> ${w.n}</div>`).join('');
+        
+        document.getElementById('infoBar').innerText = `${settings.subject} - الصف: ${settings.grade} - الفصل: ${settings.class} - أ/ ${settings.teacher}`;
+        
         switchTab('grading');
         saveData();
     }
@@ -284,152 +179,186 @@
         document.querySelectorAll('[id$="-screen"]').forEach(s => s.style.display = 'none');
         document.getElementById(t + '-screen').style.display = 'block';
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        event.currentTarget.classList.add('active');
+        if(event) event.currentTarget.classList.add('active');
+        if(t === 'grading') renderWeeklyList();
         if(t === 'fullSheet') renderFullSheet();
-        if(t === 'grading') renderStudents();
     }
 
-    function updateScore(idx, w, f, v) {
-        if(!db[idx][w]) db[idx][w] = {};
-        db[idx][w][f] = v === '' ? '' : parseFloat(v);
+    function updateVal(idx, wid, field, val) {
+        if(!db[idx][wid]) db[idx][wid] = {t:'', v:'', s:''};
+        let n = val === '' ? '' : parseFloat(val);
+        // التحقق من الحد الأقصى
+        if(field==='t' && WEEKS.find(w=>w.id===wid).isEx) n = Math.min(n, 30);
+        else if(field==='t') n = Math.min(n, 15);
+        else if(field==='v') n = Math.min(n, 15);
+        else if(field==='s') n = Math.min(n, 10);
+        
+        db[idx][wid][field] = n;
         saveData();
     }
 
-    function renderStudents() {
-        const week = document.getElementById('weekSelect').value;
-        const isEx = week.startsWith('ex');
+    function renderWeeklyList() {
+        const wid = document.getElementById('weekPicker').value;
+        const isEx = WEEKS.find(w=>w.id===wid).isEx;
         let h = '';
         students.forEach((name, i) => {
-            const d = db[i][week] || {t:'', v:'', s:''};
+            const d = db[i][wid] || {t:'', v:'', s:''};
             h += `
-            <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:10px 15px;">
-                <span style="font-weight:bold">${i+1}. ${name}</span>
-                <div style="display:flex; gap:10px">
-                    <input type="number" class="score-input" value="${d.t}" placeholder="${isEx?'درجة':'تقييم'}" onchange="updateScore(${i},'${week}','t',this.value)">
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:10px;">
+                <span>${i+1}. ${name}</span>
+                <div style="display:flex; gap:5px;">
+                    <input type="number" class="score-input" value="${d.t}" placeholder="${isEx?'درجة':'ت'}" onchange="updateVal(${i},'${wid}','t',this.value)">
                     ${!isEx ? `
-                        <input type="number" class="score-input" value="${d.v}" placeholder="حصة" onchange="updateScore(${i},'${week}','v',this.value)">
-                        <input type="number" class="score-input" value="${d.s}" placeholder="سلوك" onchange="updateScore(${i},'${week}','s',this.value)">
+                    <input type="number" class="score-input" value="${d.v}" placeholder="ح" onchange="updateVal(${i},'${wid}','v',this.value)">
+                    <input type="number" class="score-input" value="${d.s}" placeholder="س" onchange="updateVal(${i},'${wid}','s',this.value)">
                     ` : ''}
                 </div>
             </div>`;
         });
-        document.getElementById('studentsContainer').innerHTML = h;
+        document.getElementById('weeklyList').innerHTML = h;
+    }
+
+    function calcStats(idx, type) {
+        let wks = [];
+        if(type === 'p1') wks = ['w1','w2','w3','w4','w5'];
+        else if(type === 'p2') wks = ['w6','w7','w8','w9','w10'];
+        else wks = ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12'];
+
+        let t=0, v=0, s=0, count=0;
+        wks.forEach(w => {
+            if(db[idx][w]) {
+                t += (db[idx][w].t || 0);
+                v += (db[idx][w].v || 0);
+                s += (db[idx][w].s || 0);
+                count++;
+            }
+        });
+        const div = count || 1;
+        return { t: t/div, v: v/div, s: s/div, total: (t+v+s)/div };
     }
 
     function renderFullSheet() {
-        let h = `<table><thead><tr><th>الاسم</th>`;
-        weeksList.forEach(w => h += `<th>${w.n}</th>`);
-        h += `</tr></thead><tbody>`;
-        students.forEach((name, i) => {
-            h += `<tr><td style="text-align:right">${name}</td>`;
-            weeksList.forEach(w => {
-                const d = db[i][w.id] || {t:''};
-                h += `<td>${d.t || '-'}</td>`;
-            });
-            h += `</tr>`;
+        let h = `<table><thead><tr><th rowspan="2" class="sticky-col">الأسماء</th>`;
+        WEEKS.forEach(w => h += `<th colspan="${w.isEx?1:3}">${w.n}</th>`);
+        h += `<th colspan="4" class="subtotal-col">الفترة 1</th><th colspan="4" class="subtotal-col">الفترة 2</th><th colspan="5" class="final-col">النهائي (70)</th></tr><tr>`;
+        
+        WEEKS.forEach(w => {
+            if(w.isEx) h += `<th>درجة</th>`;
+            else h += `<th>ت</th><th>ح</th><th>س</th>`;
         });
-        document.getElementById('fullSheetContainer').innerHTML = h + `</tbody></table>`;
+        // ترويسات التجميع
+        for(let j=0; j<2; j++) h += `<th>ت</th><th>ح</th><th>س</th><th>م</th>`;
+        h += `<th>ت</th><th>ح</th><th>س</th><th>اختبار</th><th>مجموع</th></tr></thead><tbody>`;
+
+        students.forEach((name, i) => {
+            const p1 = calcStats(i, 'p1');
+            const p2 = calcStats(i, 'p2');
+            const all = calcStats(i, 'all');
+            let exAvg = ((db[i].ex1?.t || 0) + (db[i].ex2?.t || 0)) / 2;
+
+            h += `<tr><td class="sticky-col" style="text-align:right">${name}</td>`;
+            WEEKS.forEach(w => {
+                const d = db[i][w.id] || {t:'', v:'', s:''};
+                h += `<td>${d.t}</td>`;
+                if(!w.isEx) h += `<td>${d.v}</td><td>${d.s}</td>`;
+            });
+            // خلايا التجميع
+            h += `<td class="subtotal-col">${p1.t.toFixed(1)}</td><td class="subtotal-col">${p1.v.toFixed(1)}</td><td class="subtotal-col">${p1.s.toFixed(1)}</td><td class="subtotal-col">${p1.total.toFixed(1)}</td>`;
+            h += `<td class="subtotal-col">${p2.t.toFixed(1)}</td><td class="subtotal-col">${p2.v.toFixed(1)}</td><td class="subtotal-col">${p2.s.toFixed(1)}</td><td class="subtotal-col">${p2.total.toFixed(1)}</td>`;
+            h += `<td class="final-col">${all.t.toFixed(1)}</td><td class="final-col">${all.v.toFixed(1)}</td><td class="final-col">${all.s.toFixed(1)}</td><td class="final-col">${exAvg.toFixed(1)}</td><td class="final-col">${(all.total + exAvg).toFixed(1)}</td></tr>`;
+        });
+        document.getElementById('fullSheetTable').innerHTML = h + `</tbody></table>`;
     }
 
-    // وظيفة التصدير المخصص
-    async function processExport(type) {
-        const start = parseInt(document.getElementById('expStart').value) - 1;
-        const end = parseInt(document.getElementById('expEnd').value);
-        const selectedWeeks = Array.from(document.querySelectorAll('.week-chk:checked')).map(c => c.value);
+    async function runExport(type) {
+        const start = (parseInt(document.getElementById('stStart').value) || 1) - 1;
+        const end = parseInt(document.getElementById('stEnd').value) || students.length;
+        const selectedWids = Array.from(document.querySelectorAll('.exp-w-chk:checked')).map(c => c.value);
         
-        // إنشاء الترويسة
-        const headerHTML = `
-            <table class="report-header-table" dir="rtl">
-                <tr>
-                    <td>إدارة: ${settings.dept}</td>
-                    <td style="text-align:center">المادة: ${settings.subject}</td>
-                    <td style="text-align:left">المعلم: ${settings.teacher}</td>
-                </tr>
-                <tr>
-                    <td>مدرسة: ${settings.school}</td>
-                    <td style="text-align:center">الصف: ${settings.grade}</td>
-                    <td style="text-align:left">الفصل: ${settings.class}</td>
-                </tr>
-            </table>
-            <hr>
-        `;
+        let header = `
+            <div dir="rtl" style="margin-bottom:20px;">
+                <table style="width:100%; border:none;">
+                    <tr><td>إدارة: ${settings.dept}</td><td style="text-align:center">المادة: ${settings.subject}</td><td style="text-align:left">المعلم: ${settings.teacher}</td></tr>
+                    <tr><td>مدرسة: ${settings.school}</td><td style="text-align:center">الصف: ${settings.grade}</td><td style="text-align:left">الفصل: ${settings.class}</td></tr>
+                </table>
+                <h3 style="text-align:center; border-bottom:2px solid #000; padding-bottom:10px;">كشف رصد الدرجات التفصيلي</h3>
+            </div>`;
 
-        // إنشاء الجدول
-        let tableHTML = `<table border="1" style="width:100%; border-collapse:collapse; direction:rtl">
-            <thead>
-                <tr style="background:#f2f2f2">
-                    <th>م</th><th>الاسم</th>
-                    ${selectedWeeks.map(wid => `<th>${weeksList.find(w=>w.id===wid).n}</th>`).join('')}
-                </tr>
-            </thead>
-            <tbody>`;
+        let table = `<table border="1" dir="rtl" style="width:100%; border-collapse:collapse; text-align:center; font-size:10px;">
+            <thead><tr style="background:#eee;"><th>م</th><th>الاسم</th>`;
+        selectedWids.forEach(wid => {
+            const w = WEEKS.find(x => x.id === wid);
+            table += `<th colspan="${w.isEx?1:3}">${w.n}</th>`;
+        });
+        table += `</tr><tr style="background:#eee;"><th></th><th></th>`;
+        selectedWids.forEach(wid => {
+            const w = WEEKS.find(x => x.id === wid);
+            if(w.isEx) table += `<th>درجة</th>`;
+            else table += `<th>ت</th><th>ح</th><th>س</th>`;
+        });
+        table += `</tr></thead><tbody>`;
 
         for(let i=start; i<end; i++) {
             if(!students[i]) continue;
-            tableHTML += `<tr>
-                <td>${i+1}</td>
-                <td style="text-align:right; padding:5px">${students[i]}</td>
-                ${selectedWeeks.map(wid => `<td>${(db[i][wid] && db[i][wid].t !== '') ? db[i][wid].t : '-'}</td>`).join('')}
-            </tr>`;
+            table += `<tr><td>${i+1}</td><td style="text-align:right">${students[i]}</td>`;
+            selectedWids.forEach(wid => {
+                const w = WEEKS.find(x => x.id === wid);
+                const d = db[i][wid] || {t:'', v:'', s:''};
+                table += `<td>${d.t}</td>`;
+                if(!w.isEx) table += `<td>${d.v}</td><td>${d.s}</td>`;
+            });
+            table += `</tr>`;
         }
-        tableHTML += `</tbody></table>`;
+        table += `</tbody></table>`;
 
         if(type === 'pdf') {
-            const element = document.getElementById('pdf-template');
-            document.getElementById('pdf-header-content').innerHTML = headerHTML;
-            document.getElementById('pdf-table-content').innerHTML = tableHTML;
-            element.style.display = 'block';
-            
-            const opt = {
-                margin: 0.5,
-                filename: `تقرير_${settings.subject}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
-            };
-            
-            await html2pdf().set(opt).from(element).save();
-            element.style.display = 'none';
+            const container = document.getElementById('pdf-container');
+            container.innerHTML = header + table;
+            container.style.display = 'block';
+            const opt = { margin: 0.2, filename: 'رصد_درجات.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' } };
+            await html2pdf().set(opt).from(container).save();
+            container.style.display = 'none';
         } else {
-            // تصدير Excel مع الديباجة في الأسطر الأولى
+            const wb = XLSX.utils.book_new();
+            // تبسيط للـ Excel
             const wsData = [
-                ["إدارة:", settings.dept, "", "المادة:", settings.subject, "", "المعلم:", settings.teacher],
-                ["مدرسة:", settings.school, "", "الصف:", settings.grade, "", "الفصل:", settings.class],
+                [`إدارة: ${settings.dept}`, `المدرسة: ${settings.school}`, `المعلم: ${settings.teacher}`],
+                [`المادة: ${settings.subject}`, `الصف: ${settings.grade}`, `الفصل: ${settings.class}`],
                 [],
-                ["م", "الاسم", ...selectedWeeks.map(wid => weeksList.find(w=>w.id===wid).n)]
+                ["م", "الاسم", ...selectedWids.map(wid => WEEKS.find(x=>x.id===wid).n)]
             ];
-
             for(let i=start; i<end; i++) {
                 if(!students[i]) continue;
                 const row = [i+1, students[i]];
-                selectedWeeks.forEach(wid => row.push((db[i][wid] && db[i][wid].t !== '') ? db[i][wid].t : '-'));
+                selectedWids.forEach(wid => row.push(db[i][wid]?.t || ''));
                 wsData.push(row);
             }
-
             const ws = XLSX.utils.aoa_to_sheet(wsData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "التقرير");
-            XLSX.writeFile(wb, `تقرير_${settings.subject}.xlsx`);
+            XLSX.utils.book_append_sheet(wb, ws, "الدرجات");
+            XLSX.writeFile(wb, "الرصد.xlsx");
         }
     }
 
-    function saveData() { localStorage.setItem('pro_grading_db', JSON.stringify({students, db, settings})); }
+    function saveData(notify=false) { 
+        localStorage.setItem('mahmoud_ultra_db', JSON.stringify({students, db, settings})); 
+        if(notify) alert("تم الحفظ بنجاح!");
+    }
     
-    function clearSystem() { if(confirm("حذف كل البيانات؟")) { localStorage.clear(); location.reload(); } }
+    function resetSystem() { if(confirm("سيتم حذف كل البيانات! هل أنت متأكد؟")) { localStorage.clear(); location.reload(); } }
 
     window.onload = () => {
-        const saved = localStorage.getItem('pro_grading_db');
+        const saved = localStorage.getItem('mahmoud_ultra_db');
         if(saved) {
             const data = JSON.parse(saved);
             students = data.students; db = data.db; settings = data.settings;
-            // ملء الحقول تلقائياً من الإعدادات المحفوظة
-            document.getElementById('schoolName').value = settings.school;
+            document.getElementById('namesArea').value = students.join('\n');
             document.getElementById('deptName').value = settings.dept;
+            document.getElementById('schoolName').value = settings.school;
             document.getElementById('subjectName').value = settings.subject;
             document.getElementById('gradeLevel').value = settings.grade;
             document.getElementById('classRoom').value = settings.class;
             document.getElementById('teacherName').value = settings.teacher;
-            initApp();
+            initializeSystem();
         }
     }
 </script>

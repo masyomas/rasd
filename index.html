@@ -107,8 +107,11 @@
         }
         @media (min-width: 768px) { .student-item { flex-direction: row; align-items: center; justify-content: space-between; } }
 
-        .student-name { font-weight: bold; font-size: 1rem; color: var(--primary); margin-bottom: 10px; }
+        .student-name { font-weight: bold; font-size: 1rem; color: var(--primary); margin-bottom: 10px; transition: color 0.2s; }
         @media (min-width: 768px) { .student-name { margin-bottom: 0; flex: 1; } }
+
+        /* تعديل لون الإسم عند التعديل */
+        .highlight-name { color: #3182ce !important; }
 
         .inputs-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         @media (min-width: 768px) { .inputs-row { display: flex; gap: 15px; } }
@@ -161,7 +164,10 @@
 
         .table-scroll { overflow-x: auto; background: white; border-radius: 12px; border: 1px solid #cbd5e0; }
         table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        th { background: #34495e; color: white; padding: 12px 6px; border: 1px solid #2c3e50; white-space: nowrap; text-align: center; }
+        
+        /* تعديل رأس الجدول: خط أسود عريض */
+        th { background: #cbd5e0; color: #000000; padding: 12px 6px; border: 1px solid #a0aec0; white-space: nowrap; text-align: center; font-weight: 900; }
+        
         td { padding: 8px 4px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; }
         
         .col-group-even { background-color: #f8fafc; }
@@ -289,7 +295,6 @@
         const btn = document.getElementById('masterVoiceBtn');
         btn.classList.toggle('active', isVoiceEnabled);
         btn.innerHTML = isVoiceEnabled ? '<i class="fas fa-microphone"></i> <span>الصوت مفعل</span>' : '<i class="fas fa-microphone-slash"></i> <span>الصوت معطل</span>';
-        // تحديث الواجهة الحالية لإظهار/إخفاء الميكروفونات
         if(document.getElementById('grading-screen').style.display === 'block') renderStudents();
         if(document.getElementById('fullSheet-screen').style.display === 'block') renderFullSheet();
     }
@@ -357,7 +362,7 @@
             const div = document.createElement('div');
             div.className = 'student-item';
             div.innerHTML = `
-                <div class="student-name">${i+1}. ${name}</div>
+                <div class="student-name" id="name_weekly_${i}">${i+1}. ${name}</div>
                 <div class="inputs-row">
                     ${createInput(i, week, 't', isEx?30:15, d.t, 'weekly', isEx?'اختبار':'تقييم')}
                     ${!isEx ? createInput(i, week, 'v', 15, d.v, 'weekly', 'حصة') : ''}
@@ -374,6 +379,8 @@
             <div class="input-box">
                 <label>${label}</label>
                 <input type="number" id="${id}" class="score-input" value="${val}" inputmode="decimal"
+                    onfocus="highlightRow(${idx}, '${context}', true)"
+                    onblur="highlightRow(${idx}, '${context}', false)"
                     onkeydown="handleNav(event, ${idx}, '${w}', '${f}')"
                     onchange="updateScore(${idx}, '${w}', '${f}', this.value, ${max})">
                 <button class="mic-btn ${isVoiceEnabled ? '' : 'mic-hidden'}" onclick="listen('${id}', ${max}, ${idx}, '${w}', '${f}')">
@@ -383,6 +390,15 @@
         `;
     }
 
+    // وظيفة تلوين الاسم عند التركيز على المدخلات
+    function highlightRow(idx, context, isFocus) {
+        const nameEl = document.getElementById(`name_${context}_${idx}`);
+        if(nameEl) {
+            if(isFocus) nameEl.classList.add('highlight-name');
+            else nameEl.classList.remove('highlight-name');
+        }
+    }
+
     function handleNav(e, idx, w, f) {
         if(e.key === 'Enter') {
             e.preventDefault();
@@ -390,7 +406,6 @@
             const isEx = w.startsWith('ex');
             const context = document.getElementById('fullSheet-screen').style.display === 'block' ? 'grid' : 'weekly';
 
-            // نظام الانتقال: ت -> ح -> س -> الطالب التالي في نفس الأسبوع
             if(f === 't' && !isEx) nextId = `${context}_${idx}_${w}_v`;
             else if(f === 'v') nextId = `${context}_${idx}_${w}_s`;
             else { 
@@ -447,15 +462,15 @@
 
         students.forEach((name, i) => {
             const res = calculateFinal(idx=i);
-            html += `<tr><td class="sticky-col" style="text-align:right; font-size:0.75rem;">${name}</td>`;
+            html += `<tr><td class="sticky-col student-name" id="name_grid_${i}" style="text-align:right; font-size:0.75rem;">${name}</td>`;
             weeksList.forEach((w, wi) => {
                 const isEx = w.startsWith('ex');
                 const colorClass = wi % 2 === 0 ? 'col-group-even' : 'col-group-odd';
                 const d = db[i][w] || {t:'', v:'', s:''};
-                html += `<td class="${colorClass}"><input type="number" id="grid_${i}_${w}_t" class="grid-input" value="${d.t}" onkeydown="handleNav(event, ${i}, '${w}', 't')" onchange="updateScore(${i},'${w}','t',this.value, ${isEx?30:15})"></td>`;
+                html += `<td class="${colorClass}"><input type="number" id="grid_${i}_${w}_t" class="grid-input" value="${d.t}" onfocus="highlightRow(${i}, 'grid', true)" onblur="highlightRow(${i}, 'grid', false)" onkeydown="handleNav(event, ${i}, '${w}', 't')" onchange="updateScore(${i},'${w}','t',this.value, ${isEx?30:15})"></td>`;
                 if(!isEx) {
-                    html += `<td class="${colorClass}"><input type="number" id="grid_${i}_${w}_v" class="grid-input" value="${d.v}" onkeydown="handleNav(event, ${i}, '${w}', 'v')" onchange="updateScore(${i},'${w}','v',this.value, 15)"></td>`;
-                    html += `<td class="${colorClass}"><input type="number" id="grid_${i}_${w}_s" class="grid-input" value="${d.s}" onkeydown="handleNav(event, ${i}, '${w}', 's')" onchange="updateScore(${i},'${w}','s',this.value, 10)"></td>`;
+                    html += `<td class="${colorClass}"><input type="number" id="grid_${i}_${w}_v" class="grid-input" value="${d.v}" onfocus="highlightRow(${i}, 'grid', true)" onblur="highlightRow(${i}, 'grid', false)" onkeydown="handleNav(event, ${i}, '${w}', 'v')" onchange="updateScore(${i},'${w}','v',this.value, 15)"></td>`;
+                    html += `<td class="${colorClass}"><input type="number" id="grid_${i}_${w}_s" class="grid-input" value="${d.s}" onfocus="highlightRow(${i}, 'grid', true)" onblur="highlightRow(${i}, 'grid', false)" onkeydown="handleNav(event, ${i}, '${w}', 's')" onchange="updateScore(${i},'${w}','s',this.value, 10)"></td>`;
                 }
             });
             html += `<td class="subtotal-section">${res.p1.t}</td><td class="subtotal-section">${res.p1.v}</td><td class="subtotal-section">${res.p1.s}</td><td class="subtotal-section">${res.p1.sum}</td>`;

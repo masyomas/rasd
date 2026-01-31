@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منظومة المحمودية الذكية - الإصدار العملاق V4</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #1abc9c;
+            --danger: #e74c3c;
+            --success: #27ae60;
+            --bg: #f0f2f5;
+            --card-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding-bottom: 50px;
+            direction: rtl;
+            color: #1a202c;
+        }
+
+        .app-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        
+        .voice-master-btn {
+            background: #4a5568;
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .voice-master-btn.active { background: var(--danger); box-shadow: 0 0 10px rgba(231, 76, 60, 0.5); }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            padding: 10px;
+            overflow-x: auto;
+            background: white;
+            border-bottom: 2px solid #e2e8f0;
+            scrollbar-width: none;
+        }
+        .tabs::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            padding: 10px 18px;
+            border: none;
+            background: #edf2f7;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            white-space: nowrap;
+            transition: 0.3s;
+            color: #4a5568;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tab-btn.active { background: var(--accent); color: white; }
+
+        .container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 10px; }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 15px;
+        }
+
+        .student-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+        @media (min-width: 768px) { .student-item { flex-direction: row; align-items: center; justify-content: space-between; } }
+
+        .student-name { font-weight: bold; font-size: 1rem; color: var(--primary); margin-bottom: 10px; }
+        @media (min-width: 768px) { .student-name { margin-bottom: 0; flex: 1; } }
+
+        .inputs-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        @media (min-width: 768px) { .inputs-row { display: flex; gap: 15px; } }
+
+        .input-box { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .input-box label { font-size: 11px; color: #718096; font-weight: bold; }
+
+        .score-input, .grid-input {
+            width: 60px;
+            padding: 10px 2px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 900;
+            font-size: 1.2rem;
+            outline: none;
+            transition: 0.2s;
+        }
+        .score-input:focus, .grid-input:focus { border-color: var(--accent); background: #f0fff4; }
+
+        .mic-btn {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .mic-btn.listening { background: var(--danger); color: white; animation: pulse 1s infinite; }
+        .mic-hidden { display: none !important; }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        .btn {
+            padding: 10px 15px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+
+        .form-control {
+            width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #e2e8f0;
+            font-family: inherit; outline: none; margin-bottom: 10px;
+        }
+
+        .table-scroll { overflow-x: auto; background: white; border-radius: 12px; border: 1px solid #cbd5e0; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { background: #34495e; color: white; padding: 12px 6px; border: 1px solid #2c3e50; white-space: nowrap; text-align: center; }
+        td { padding: 8px 4px; border: 1px solid #e2e8f0; text-align: center; font-weight: bold; }
+        
+        .col-group-even { background-color: #f8fafc; }
+        .col-group-odd { background-color: #ffffff; }
+        .subtotal-section { background: #ebf8ff !important; color: #2b6cb0; border-inline: 2px solid #3182ce !important; }
+        .final-section { background: #f0fff4 !important; color: var(--success); border-inline: 2px solid var(--success) !important; }
+        
+        .sticky-col {
+            position: sticky; right: 0; background: white; z-index: 10;
+            border-left: 3px solid #cbd5e0 !important; box-shadow: -2px 0 5px rgba(0,0,0,0.05);
+        }
+
+        #toast {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: #2d3748; color: white; padding: 12px 25px; border-radius: 25px; display: none; z-index: 2000;
+        }
+
+        .info-header {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px; margin-bottom: 15px; padding: 12px; background: #edf2f7; border-radius: 10px;
+        }
+        .info-header span { font-weight: bold; font-size: 0.85rem; color: var(--primary); }
+    </style>
+</head>
+<body>
+
+<div class="app-header">
+    <div class="header-left">
+        <i class="fas fa-microchip fa-lg"></i>
+        <span style="font-weight: 800;">منظومة المحمودية الذكية</span>
+    </div>
+    <div style="display:flex; gap:10px;">
+        <button id="masterVoiceBtn" class="voice-master-btn" onclick="toggleGlobalVoice()">
+            <i class="fas fa-microphone-slash"></i> <span>الصوت معطل</span>
+        </button>
+        <button class="btn btn-success" style="padding: 8px 15px;" onclick="saveData()">
+            <i class="fas fa-save"></i>
+        </button>
+    </div>
+</div>
+
+<div class="tabs" id="appTabs" style="display:none;">
+    <button class="tab-btn active" onclick="switchTab('grading')"><i class="fas fa-calendar-alt"></i> الرصد الأسبوعي</button>
+    <button class="tab-btn" onclick="switchTab('fullSheet')"><i class="fas fa-table"></i> الشيت الكامل</button>
+    <button class="tab-btn" onclick="switchTab('report')"><i class="fas fa-file-invoice"></i> التقرير الختامي</button>
+    <button class="tab-btn" onclick="switchTab('tools')"><i class="fas fa-tools"></i> الأدوات</button>
+</div>
+
+<div class="container">
+    <div id="setup-screen" class="card">
+        <h3><i class="fas fa-cogs"></i> تهيئة المنظومة</h3>
+        <input type="text" id="subjectName" class="form-control" placeholder="المادة الدراسية (مثلاً: رياضيات)">
+        <input type="text" id="gradeLevel" class="form-control" placeholder="الصف والفصل (مثلاً: 1/2)">
+        <input type="text" id="teacherName" class="form-control" placeholder="اسم المعلم">
+        <textarea id="namesList" class="form-control" style="height:150px;" placeholder="أدخل الأسماء هنا... اسم في كل سطر"></textarea>
+        
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <button class="btn" style="background:#e2e8f0;" onclick="document.getElementById('namesFile').click()">
+                <i class="fas fa-file-import"></i> استيراد أسماء
+            </button>
+            <input type="file" id="namesFile" style="display:none" accept=".txt,.xlsx,.xls" onchange="importNames(this)">
+            <button class="btn btn-primary" onclick="initApp()">تشغيل المنظومة</button>
+        </div>
+    </div>
+
+    <div id="grading-screen" style="display:none;">
+        <div class="info-header" id="gradingInfo"></div>
+        <div class="card" style="padding:10px;">
+            <select id="weekSelect" class="form-control" style="margin-bottom:0; font-weight:bold; border-color:var(--accent);" onchange="renderStudents()">
+                <optgroup label="الفترة الأولى">
+                    <option value="w1">الأسبوع 1</option><option value="w2">الأسبوع 2</option><option value="w3">الأسبوع 3</option><option value="w4">الأسبوع 4</option><option value="w5">الأسبوع 5</option>
+                    <option value="ex1">اختبار الشهر 1 (30)</option>
+                </optgroup>
+                <optgroup label="الفترة الثانية">
+                    <option value="w6">الأسبوع 6</option><option value="w7">الأسبوع 7</option><option value="w8">الأسبوع 8</option><option value="w9">الأسبوع 9</option><option value="w10">الأسبوع 10</option>
+                    <option value="ex2">اختبار الشهر 2 (30)</option>
+                </optgroup>
+            </select>
+        </div>
+        <div id="studentsContainer"></div>
+    </div>
+
+    <div id="fullSheet-screen" class="card" style="display:none;">
+        <div class="info-header" id="sheetInfo"></div>
+        <div class="table-scroll" id="fullSheetContainer"></div>
+    </div>
+
+    <div id="report-screen" class="card" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 style="margin:0;">التقرير الختامي المعتمد</h3>
+            <button class="btn btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> تصدير إكسيل</button>
+        </div>
+        <div class="info-header" id="reportInfo"></div>
+        <div class="table-scroll" id="tableContainer"></div>
+    </div>
+
+    <div id="tools-screen" class="card" style="display:none;">
+        <button class="btn btn-primary" style="width:100%; margin-bottom:12px;" onclick="exportFullData()">تصدير نسخة احتياطية (JSON)</button>
+        <button class="btn btn-success" style="width:100%; margin-bottom:12px;" onclick="document.getElementById('dbFile').click()">استيراد نسخة احتياطية</button>
+        <input type="file" id="dbFile" style="display:none" accept=".json" onchange="importFullData(this)">
+        <hr>
+        <button class="btn btn-danger" style="width:100%;" onclick="clearSystem()">حذف كافة البيانات نهائياً</button>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+    let students = [];
+    let db = {};
+    let settings = { subject: '', grade: '', teacher: '' };
+    let isVoiceEnabled = false;
+    
+    const weeksList = ['w1','w2','w3','w4','w5','ex1','w6','w7','w8','w9','w10','ex2','w11','w12'];
+    const egyMap = {'صفر':0,'واحد':1,'اتنين':2,'تلاتة':3,'تلاته':3,'اربعة':4,'اربعة':4,'خمسة':5,'خمسه':5,'ستة':6,'سته':6,'سبعة':7,'سبعه':7,'تمانية':8,'تمنية':8,'تسعة':9,'تسعه':9,'عشرة':10,'عشره':10};
+
+    function showToast(m) {
+        const t = document.getElementById('toast');
+        t.innerText = m; t.style.display = 'block';
+        setTimeout(() => t.style.display='none', 2000);
+    }
+
+    function toggleGlobalVoice() {
+        isVoiceEnabled = !isVoiceEnabled;
+        const btn = document.getElementById('masterVoiceBtn');
+        btn.classList.toggle('active', isVoiceEnabled);
+        btn.innerHTML = isVoiceEnabled ? '<i class="fas fa-microphone"></i> <span>الصوت مفعل</span>' : '<i class="fas fa-microphone-slash"></i> <span>الصوت معطل</span>';
+        // تحديث الواجهة الحالية لإظهار/إخفاء الميكروفونات
+        if(document.getElementById('grading-screen').style.display === 'block') renderStudents();
+        if(document.getElementById('fullSheet-screen').style.display === 'block') renderFullSheet();
+    }
+
+    function importNames(input) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        if(file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+            reader.onload = (e) => {
+                const wb = XLSX.read(new Uint8Array(e.target.result), {type: 'array'});
+                const names = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1}).map(r => r[0]).filter(n => n);
+                document.getElementById('namesList').value = names.join('\n');
+            };
+            reader.readAsArrayBuffer(file);
+        } else {
+            reader.onload = (e) => document.getElementById('namesList').value = e.target.result;
+            reader.readAsText(file);
+        }
+    }
+
+    function initApp() {
+        const raw = document.getElementById('namesList').value.trim();
+        if(!raw) return alert("يرجى إدخال أسماء الطلاب");
+        settings = {
+            subject: document.getElementById('subjectName').value || 'غير محدد',
+            grade: document.getElementById('gradeLevel').value || 'غير محدد',
+            teacher: document.getElementById('teacherName').value || 'غير محدد'
+        };
+        students = raw.split('\n').map(n => n.trim()).filter(n => n);
+        students.forEach((_, i) => { if(!db[i]) db[i] = {}; });
+        
+        document.getElementById('setup-screen').style.display = 'none';
+        document.getElementById('appTabs').style.display = 'flex';
+        updateHeaders();
+        switchTab('grading');
+        saveDataSilent();
+    }
+
+    function updateHeaders() {
+        const html = `<span><i class="fas fa-book"></i> ${settings.subject}</span> <span><i class="fas fa-users"></i> ${settings.grade}</span> <span><i class="fas fa-user-tie"></i> ${settings.teacher}</span>`;
+        document.getElementById('gradingInfo').innerHTML = html;
+        document.getElementById('sheetInfo').innerHTML = html;
+        document.getElementById('reportInfo').innerHTML = html;
+    }
+
+    function switchTab(t) {
+        document.querySelectorAll('[id$="-screen"]').forEach(s => s.style.display = 'none');
+        document.getElementById(t + '-screen').style.display = 'block';
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        const btn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.onclick.toString().includes(t));
+        if(btn) btn.classList.add('active');
+
+        if(t === 'grading') renderStudents();
+        if(t === 'fullSheet') renderFullSheet();
+        if(t === 'report') renderFinalReport();
+    }
+
+    function renderStudents() {
+        const cont = document.getElementById('studentsContainer');
+        const week = document.getElementById('weekSelect').value;
+        const isEx = week.startsWith('ex');
+        cont.innerHTML = '';
+        students.forEach((name, i) => {
+            const d = db[i][week] || {t:'', v:'', s:''};
+            const div = document.createElement('div');
+            div.className = 'student-item';
+            div.innerHTML = `
+                <div class="student-name">${i+1}. ${name}</div>
+                <div class="inputs-row">
+                    ${createInput(i, week, 't', isEx?30:15, d.t, 'weekly', isEx?'اختبار':'تقييم')}
+                    ${!isEx ? createInput(i, week, 'v', 15, d.v, 'weekly', 'حصة') : ''}
+                    ${!isEx ? createInput(i, week, 's', 10, d.s, 'weekly', 'سلوك') : ''}
+                </div>
+            `;
+            cont.appendChild(div);
+        });
+    }
+
+    function createInput(idx, w, f, max, val, context, label) {
+        const id = `${context}_${idx}_${w}_${f}`;
+        return `
+            <div class="input-box">
+                <label>${label}</label>
+                <input type="number" id="${id}" class="score-input" value="${val}" inputmode="decimal"
+                    onkeydown="handleNav(event, ${idx}, '${w}', '${f}')"
+                    onchange="updateScore(${idx}, '${w}', '${f}', this.value, ${max})">
+                <button class="mic-btn ${isVoiceEnabled ? '' : 'mic-hidden'}" onclick="listen('${id}', ${max}, ${idx}, '${w}', '${f}')">
+                    <i class="fas fa-microphone"></i>
+                </button>
+            </div>
+        `;
+    }
+
+    function handleNav(e, idx, w, f) {
+        if(e.key === 'Enter') {
+            e.preventDefault();
+            let nextId = "";
+            const isEx = w.startsWith('ex');
+            const context = document.getElementById('fullSheet-screen').style.display === 'block' ? 'grid' : 'weekly';
+
+            // نظام الانتقال: ت -> ح -> س -> الطالب التالي في نفس الأسبوع
+            if(f === 't' && !isEx) nextId = `${context}_${idx}_${w}_v`;
+            else if(f === 'v') nextId = `${context}_${idx}_${w}_s`;
+            else { 
+                if(idx < students.length - 1) nextId = `${context}_${idx+1}_${w}_t`;
+            }
+
+            const nextEl = document.getElementById(nextId);
+            if(nextEl) { nextEl.focus(); nextEl.select(); }
+        }
+    }
+
+    function listen(targetId, max, idx, w, f) {
+        const rec = new (window.webkitSpeechRecognition || window.SpeechRecognition)();
+        rec.lang = 'ar-EG';
+        rec.onstart = () => document.getElementById(targetId).parentElement.querySelector('.mic-btn').classList.add('listening');
+        rec.onresult = (e) => {
+            let transcript = e.results[0][0].transcript;
+            let v = parseFloat(transcript);
+            if(isNaN(v)) { for(let k in egyMap) if(transcript.includes(k)) v = egyMap[k]; }
+            if(!isNaN(v)) {
+                v = Math.min(v, max);
+                document.getElementById(targetId).value = v;
+                updateScore(idx, w, f, v, max);
+                handleNav({key:'Enter', preventDefault:()=>{}}, idx, w, f);
+            }
+        };
+        rec.onend = () => document.querySelectorAll('.mic-btn').forEach(b => b.classList.remove('listening'));
+        rec.start();
+    }
+
+    function updateScore(idx, w, f, v, max) {
+        if(!db[idx][w]) db[idx][w] = {};
+        db[idx][w][f] = v === '' ? '' : Math.min(parseFloat(v), max);
+        saveDataSilent();
+    }
+
+    function renderFullSheet() {
+        const cont = document.getElementById('fullSheetContainer');
+        let html = `<table><thead><tr><th rowspan="2" class="sticky-col">الأسماء</th>`;
+        weeksList.forEach((w, i) => {
+            const isEx = w.startsWith('ex');
+            const colorClass = i % 2 === 0 ? 'col-group-even' : 'col-group-odd';
+            html += `<th colspan="${isEx?1:3}" class="${colorClass}">${w.replace('w','أسبوع ').replace('ex','إختبار')}</th>`;
+        });
+        html += `<th colspan="4" class="subtotal-section">فترة 1</th><th colspan="4" class="subtotal-section">فترة 2</th><th colspan="5" class="final-section">النهائي</th></tr><tr>`;
+        weeksList.forEach((w, i) => {
+            const colorClass = i % 2 === 0 ? 'col-group-even' : 'col-group-odd';
+            if(w.startsWith('ex')) html += `<th class="${colorClass}">د</th>`;
+            else html += `<th class="${colorClass}">ت</th><th class="${colorClass}">ح</th><th class="${colorClass}">س</th>`;
+        });
+        html += `<th class="subtotal-section">ت</th><th class="subtotal-section">ح</th><th class="subtotal-section">س</th><th class="subtotal-section">م</th>`;
+        html += `<th class="subtotal-section">ت</th><th class="subtotal-section">ح</th><th class="subtotal-section">س</th><th class="subtotal-section">م</th>`;
+        html += `<th class="final-section">ت</th><th class="final-section">ح</th><th class="final-section">س</th><th class="final-section">إ</th><th class="final-section">70</th></tr></thead><tbody>`;
+
+        students.forEach((name, i) => {
+            const res = calculateFinal(idx=i);
+            html += `<tr><td class="sticky-col" style="text-align:right; font-size:0.75rem;">${name}</td>`;
+            weeksList.forEach((w, wi) => {
+                const isEx = w.startsWith('ex');
+                const colorClass = wi % 2 === 0 ? 'col-group-even' : 'col-group-odd';
+                const d = db[i][w] || {t:'', v:'', s:''};
+                html += `<td class="${colorClass}"><input type="number" id="grid_${i}_${w}_t" class="grid-input" value="${d.t}" onkeydown="handleNav(event, ${i}, '${w}', 't')" onchange="updateScore(${i},'${w}','t',this.value, ${isEx?30:15})"></td>`;
+                if(!isEx) {
+                    html += `<td class="${colorClass}"><input type="number" id="grid_${i}_${w}_v" class="grid-input" value="${d.v}" onkeydown="handleNav(event, ${i}, '${w}', 'v')" onchange="updateScore(${i},'${w}','v',this.value, 15)"></td>`;
+                    html += `<td class="${colorClass}"><input type="number" id="grid_${i}_${w}_s" class="grid-input" value="${d.s}" onkeydown="handleNav(event, ${i}, '${w}', 's')" onchange="updateScore(${i},'${w}','s',this.value, 10)"></td>`;
+                }
+            });
+            html += `<td class="subtotal-section">${res.p1.t}</td><td class="subtotal-section">${res.p1.v}</td><td class="subtotal-section">${res.p1.s}</td><td class="subtotal-section">${res.p1.sum}</td>`;
+            html += `<td class="subtotal-section">${res.p2.t}</td><td class="subtotal-section">${res.p2.v}</td><td class="subtotal-section">${res.p2.s}</td><td class="subtotal-section">${res.p2.sum}</td>`;
+            html += `<td class="final-section">${res.f.t}</td><td class="final-section">${res.f.v}</td><td class="final-section">${res.f.s}</td><td class="final-section">${res.f.ex}</td><td class="final-section">${res.total}</td></tr>`;
+        });
+        cont.innerHTML = html + `</tbody></table>`;
+    }
+
+    function calculateFinal(idx) {
+        const getStats = (wks) => {
+            let t=0, tc=0, v=0, vc=0, s=0, sc=0;
+            wks.forEach(w => {
+                let d = db[idx][w];
+                if(d && !w.startsWith('ex')) {
+                    if(d.t !== '') { t+=d.t; tc++; }
+                    if(d.v !== '') { v+=d.v; vc++; }
+                    if(d.s !== '') { s+=d.s; sc++; }
+                }
+            });
+            const a = (sum, count) => count > 0 ? sum / count : 0;
+            return { t: a(t,tc).toFixed(1), v: a(v,vc).toFixed(1), s: a(s,sc).toFixed(1), sum: (a(t,tc)+a(v,vc)+a(s,sc)).toFixed(1) };
+        };
+        const p1 = getStats(['w1','w2','w3','w4','w5']);
+        const p2 = getStats(['w6','w7','w8','w9','w10']);
+        const f = getStats(weeksList);
+        let exS=0, exC=0;
+        ['ex1','ex2'].forEach(e => { if(db[idx][e] && db[idx][e].t !== '') { exS+=db[idx][e].t; exC++; } });
+        const avgEx = exC > 0 ? exS/exC : 0;
+        const total = (parseFloat(f.sum) + avgEx).toFixed(1);
+        return { p1, p2, f: {...f, ex: avgEx.toFixed(1)}, total };
+    }
+
+    function renderFinalReport() {
+        let html = `<table><thead><tr><th>م</th><th>الاسم</th><th>تقييم(15)</th><th>حصة(15)</th><th>سلوك(10)</th><th>اختبار(30)</th><th class="final-section">المجموع(70)</th></tr></thead><tbody>`;
+        students.forEach((name, i) => {
+            const res = calculateFinal(i);
+            html += `<tr><td>${i+1}</td><td style="text-align:right">${name}</td><td>${res.f.t}</td><td>${res.f.v}</td><td>${res.f.s}</td><td>${res.f.ex}</td><td class="final-section">${res.total}</td></tr>`;
+        });
+        document.getElementById('tableContainer').innerHTML = html + `</tbody></table>`;
+    }
+
+    function saveData() { saveDataSilent(); showToast("تم حفظ البيانات بنجاح"); }
+    function saveDataSilent() { localStorage.setItem('mahmoud_v4_db', JSON.stringify({students, db, settings})); }
+    
+    function exportToExcel() {
+        const data = students.map((n, i) => { const r = calculateFinal(i); return { 'الاسم': n, 'تقييم': r.f.t, 'حصة': r.f.v, 'سلوك': r.f.s, 'اختبار': r.f.ex, 'المجموع': r.total }; });
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "الدرجات");
+        XLSX.writeFile(wb, `منظومة_المحمودية_${settings.subject}.xlsx`);
+    }
+
+    function exportFullData() {
+        const blob = new Blob([JSON.stringify({students, db, settings})], {type: 'application/json'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `backup_${settings.subject}.json`; a.click();
+    }
+
+    function importFullData(input) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const data = JSON.parse(e.target.result);
+            students = data.students; db = data.db; settings = data.settings;
+            updateHeaders(); switchTab('grading'); showToast("تم استعادة النسخة الاحتياطية");
+        };
+        reader.readAsText(input.files[0]);
+    }
+
+    function clearSystem() { if(confirm("هل أنت متأكد من حذف كل شيء؟")) { localStorage.clear(); location.reload(); } }
+
+    window.onload = () => {
+        const saved = localStorage.getItem('mahmoud_v4_db');
+        if(saved) {
+            const data = JSON.parse(saved);
+            students = data.students; db = data.db; settings = data.settings;
+            document.getElementById('setup-screen').style.display = 'none';
+            document.getElementById('appTabs').style.display = 'flex';
+            updateHeaders(); switchTab('grading');
+        }
+    };
+</script>
+</body>
+</html>

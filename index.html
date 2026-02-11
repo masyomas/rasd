@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>المنظومة الشاملة المعتمدة - أ/ محمود عادل صالح</title>
+    <title>المنظومة الشاملة المعتمدة - نسخة مطورة</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,29 +11,31 @@
         :root { --primary: #2c3e50; --accent: #1abc9c; --danger: #e74c3c; --success: #27ae60; --bg: #f8f9fa; }
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
         body { background: var(--bg); margin: 0; direction: rtl; padding-bottom: 70px; color: #333; }
-        
+
         .app-header { background: var(--primary); color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .tabs { display: flex; gap: 8px; padding: 12px; overflow-x: auto; background: white; border-bottom: 2px solid #ddd; }
         .tab-btn { padding: 12px 25px; border: none; background: #eaedf0; border-radius: 10px; cursor: pointer; font-weight: bold; white-space: nowrap; transition: 0.3s; color: #555; }
         .tab-btn.active { background: var(--accent); color: white; transform: translateY(-2px); }
-        
+
         .container { width: 99%; max-width: 1900px; margin: 20px auto; }
         .card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 6px 15px rgba(0,0,0,0.08); margin-bottom: 25px; border: 1px solid #e0e0e0; }
-        
+
         .table-scroll { overflow-x: auto; max-height: 75vh; border: 1px solid #cbd5e0; border-radius: 10px; }
         table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
         th { background: #34495e; color: white; border: 1px solid #4a5568; padding: 8px 4px; position: sticky; top: 0; z-index: 5; }
         td { border: 1px solid #cbd5e0; text-align: center; padding: 5px; font-weight: 800; color: #2d3748; }
-        
+
         .sticky-col { position: sticky; right: 0; background: #f7fafc; z-index: 10; border-left: 3px solid #718096 !important; }
         .subtotal-col { background: #ebf8ff !important; color: #2b6cb0; }
         .final-col { background: #f0fff4 !important; color: #27ae60; border: 1px solid #c6f6d5; }
-        
+
         .score-input { width: 45px; border: 1px solid #a0aec0; text-align: center; border-radius: 5px; padding: 6px 0; font-weight: bold; font-size: 1rem; }
         .score-input:focus { border-color: var(--accent); outline: none; background: #e6fffa; }
-        
+
+        .bulk-btn { background: #8e44ad; color: white; border: none; border-radius: 4px; padding: 2px 8px; font-size: 10px; cursor: pointer; margin-top: 5px; display: block; width: 100%; }
+
         .footer-marquee { position: fixed; bottom: 0; width: 100%; background: var(--primary); color: white; padding: 8px 0; z-index: 1000; font-weight: bold; font-size: 0.9rem; }
-        
+
         .setup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
         .export-panel { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
     </style>
@@ -41,15 +43,17 @@
 <body>
 
 <div class="app-header">
-    <div style="font-size: 1.3rem; font-weight: 900;"><i class="fas fa-graduation-cap"></i> منظومة الرصد الذكية - النسخة الشاملة</div>
-    <button class="tab-btn" style="background:var(--success); color:white; border-radius: 8px; border:none;" onclick="saveData(true)"><i class="fas fa-save"></i> حفظ البيانات</button>
+    <div style="font-size: 1.3rem; font-weight: 900;"><i class="fas fa-graduation-cap"></i> منظومة الرصد الذكية - النسخة المطورة</div>
+    <div>
+        <button class="tab-btn" style="background:var(--success); color:white; border-radius: 8px; border:none;" onclick="saveData(true)"><i class="fas fa-save"></i> حفظ</button>
+    </div>
 </div>
 
 <div class="tabs" id="mainTabs" style="display:none;">
-    <button class="tab-btn active" onclick="switchTab('grading')">الرصد الأسبوعي</button>
-    <button class="tab-btn" onclick="switchTab('fullSheet')">الشيت الكامل (70)</button>
-    <button class="tab-btn" onclick="switchTab('export')">تصدير مخصص</button>
-    <button class="tab-btn" onclick="switchTab('tools')">الإعدادات</button>
+    <button class="tab-btn active" id="tab-grading" onclick="switchTab('grading')">الرصد الأسبوعي</button>
+    <button class="tab-btn" id="tab-fullSheet" onclick="switchTab('fullSheet')">الشيت الكامل (70)</button>
+    <button class="tab-btn" id="tab-export" onclick="switchTab('export')">تصدير مخصص</button>
+    <button class="tab-btn" id="tab-tools" onclick="switchTab('tools')">الإعدادات والنسخ</button>
 </div>
 
 <div class="container">
@@ -68,6 +72,8 @@
             <div style="margin: 10px 0;">
                 <button onclick="document.getElementById('fileImport').click()" class="tab-btn" style="background:#3182ce; color:white;"><i class="fas fa-file-excel"></i> استيراد من Excel/Txt</button>
                 <input type="file" id="fileImport" accept=".xlsx, .xls, .txt" style="display:none;" onchange="handleFileImport(this)">
+                <button onclick="document.getElementById('jsonImport').click()" class="tab-btn" style="background:#f39c12; color:white;"><i class="fas fa-upload"></i> استرجاع نسخة JSON</button>
+                <input type="file" id="jsonImport" accept=".json" style="display:none;" onchange="importJSON(this)">
             </div>
             <textarea id="namesArea" class="card" style="width:100%; height:180px; margin-top:10px; border: 2px solid #e2e8f0;" placeholder="أدخل الأسماء هنا.. اسم في كل سطر"></textarea>
         </div>
@@ -76,7 +82,16 @@
 
     <div id="grading-screen" style="display:none;">
         <div id="infoBar" class="card" style="background:#ebf8ff; color:#2c5282; font-weight:bold; border-right: 6px solid #3182ce;"></div>
-        <select id="weekPicker" class="card" style="width:100%; font-size:1.1rem; border:2px solid #cbd5e0" onchange="renderWeeklyList()"></select>
+        
+        <div class="card" style="padding:15px; display:flex; gap:10px; align-items:center; background: #fff;">
+            <div style="flex:1">
+                <label>اختر الأسبوع:</label>
+                <select id="weekPicker" class="card" style="width:100%; font-size:1.1rem; border:2px solid #cbd5e0; margin:0" onchange="renderWeeklyList()"></select>
+            </div>
+            <div id="bulkActions" style="display:flex; gap:5px; flex:1">
+                </div>
+        </div>
+
         <div id="weeklyList"></div>
     </div>
 
@@ -104,21 +119,37 @@
     </div>
 
     <div id="tools-screen" class="card" style="display:none;">
-        <button class="tab-btn" style="width:100%; margin-bottom:10px;" onclick="backupJSON()">حفظ نسخة احتياطية (JSON)</button>
-        <button class="tab-btn" style="width:100%; background:var(--danger); color:white;" onclick="resetSystem()">حذف كافة البيانات نهائياً</button>
+        <h3>إدارة النظام والنسخ الاحتياطي</h3>
+        <div style="display:grid; gap:15px;">
+            <button class="tab-btn" style="background:#3182ce; color:white;" onclick="backupJSON()">
+                <i class="fas fa-download"></i> حفظ نسخة احتياطية وتسميتها (JSON)
+            </button>
+            <button class="tab-btn" style="background:#f39c12; color:white;" onclick="document.getElementById('jsonImportTools').click()">
+                <i class="fas fa-upload"></i> استرجاع نسخة احتياطية من ملف
+            </button>
+            <input type="file" id="jsonImportTools" accept=".json" style="display:none;" onchange="importJSON(this)">
+            <hr style="width:100%; border:0; border-top:1px solid #eee;">
+            <button class="tab-btn" style="background:var(--danger); color:white;" onclick="resetSystem()">
+                <i class="fas fa-trash-alt"></i> حذف كافة البيانات نهائياً وتصفير النظام
+            </button>
+        </div>
     </div>
 </div>
 
 <div id="pdf-container" style="display:none; background:white; padding:30px;"></div>
 
 <div class="footer-marquee">
-    <marquee direction="right">بواسطة الأستاذ: محمود عادل صالح | هاتف: ٠١٥٥٢٤٠٢٩١٢ | منظومة الرصد الذكية الشاملة (جميع الحقوق محفوظة)</marquee>
+    <marquee direction="right">بواسطة الأستاذ: محمود عادل صالح | نسخة مطورة بحدود درجات ذكية | جميع الحقوق محفوظة</marquee>
 </div>
 
 <script>
     let students = [];
     let db = {};
     let settings = {};
+    
+    // تعريف الحدود القصوى للدرجات
+    const LIMITS = { t: 10, v: 5, s: 5, ex: 10 };
+
     const WEEKS = [
         {id:'w1', n:'الأسبوع 1'}, {id:'w2', n:'الأسبوع 2'}, {id:'w3', n:'الأسبوع 3'}, {id:'w4', n:'الأسبوع 4'}, {id:'w5', n:'الأسبوع 5'},
         {id:'ex1', n:'اختبار 1', isEx:true},
@@ -168,30 +199,81 @@
         document.querySelectorAll('[id$="-screen"]').forEach(s => s.style.display = 'none');
         document.getElementById(t + '-screen').style.display = 'block';
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        if(event) event.currentTarget.classList.add('active');
+        document.getElementById('tab-' + t).classList.add('active');
         if(t === 'grading') renderWeeklyList();
         if(t === 'fullSheet') renderFullSheet();
     }
 
+    // تعديل الدالة لتشمل التحقق من الحدود القصوى (Validation)
     function updateVal(idx, wid, field, val) {
         if(!db[idx][wid]) db[idx][wid] = {t:'', v:'', s:''};
-        db[idx][wid][field] = val === '' ? '' : parseFloat(val);
+        
+        let numVal = val === '' ? '' : parseFloat(val);
+        const isEx = WEEKS.find(w => w.id === wid).isEx;
+        
+        // تطبيق القيود
+        let max = isEx ? LIMITS.ex : LIMITS[field];
+        if (numVal > max) numVal = max;
+        if (numVal < 0) numVal = 0;
+
+        db[idx][wid][field] = numVal;
+        
+        // تحديث الحقل في الواجهة فوراً للتصحيح التلقائي
+        const input = document.querySelector(`input[data-idx="${idx}"][data-field="${field}"]`);
+        if(input) input.value = numVal;
+
+        saveData();
+    }
+
+    // ميزة التطبيق على الكل
+    function applyBulk(field) {
+        const wid = document.getElementById('weekPicker').value;
+        const isEx = WEEKS.find(w => w.id === wid).isEx;
+        let max = isEx ? LIMITS.ex : LIMITS[field];
+        
+        const label = field === 't' ? 'التقييم' : (field === 'v' ? 'الحصة' : 'السلوك');
+        let val = prompt(`أدخل الدرجة الموحدة لعمود (${label}) - بحد أقصى ${max}:`, "");
+        
+        if (val === null || val === "") return;
+        
+        let numVal = parseFloat(val);
+        if (numVal > max) numVal = max;
+        if (numVal < 0 || isNaN(numVal)) numVal = 0;
+
+        students.forEach((_, i) => {
+            if(!db[i][wid]) db[i][wid] = {t:'', v:'', s:''};
+            db[i][wid][field] = numVal;
+        });
+        
+        renderWeeklyList();
         saveData();
     }
 
     function renderWeeklyList() {
         const wid = document.getElementById('weekPicker').value;
         const isEx = WEEKS.find(w=>w.id===wid).isEx;
+        
+        // تحديث أزرار التطبيق على الكل
+        let bulkHTML = `<button class="tab-btn" style="font-size:12px; padding:5px; background:#8e44ad; color:white;" onclick="applyBulk('t')">تطبيق (ت) للكل</button>`;
+        if(!isEx) {
+            bulkHTML += `<button class="tab-btn" style="font-size:12px; padding:5px; background:#8e44ad; color:white;" onclick="applyBulk('v')">تطبيق (ح) للكل</button>`;
+            bulkHTML += `<button class="tab-btn" style="font-size:12px; padding:5px; background:#8e44ad; color:white;" onclick="applyBulk('s')">تطبيق (س) للكل</button>`;
+        }
+        document.getElementById('bulkActions').innerHTML = bulkHTML;
+
         let h = '';
         students.forEach((name, i) => {
             const d = db[i][wid] || {t:'', v:'', s:''};
-            h += `<div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid #edf2f7;">
+            h += `<div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid #edf2f7; margin-bottom:8px;">
                 <span style="font-size:1.1rem;"><b>${i+1}.</b> ${name}</span>
                 <div style="display:flex; gap:12px;">
-                    <div style="text-align:center"><small style="display:block; color:#718096">ت</small><input type="number" class="score-input" value="${d.t}" onchange="updateVal(${i},'${wid}','t',this.value)"></div>
+                    <div style="text-align:center"><small style="display:block; color:#718096">ت</small>
+                    <input type="number" data-idx="${i}" data-field="t" class="score-input" value="${d.t}" onchange="updateVal(${i},'${wid}','t',this.value)"></div>
                     ${!isEx ? `
-                    <div style="text-align:center"><small style="display:block; color:#718096">ح</small><input type="number" class="score-input" value="${d.v}" onchange="updateVal(${i},'${wid}','v',this.value)"></div>
-                    <div style="text-align:center"><small style="display:block; color:#718096">س</small><input type="number" class="score-input" value="${d.s}" onchange="updateVal(${i},'${wid}','s',this.value)"></div>
+                    <div style="text-align:center"><small style="display:block; color:#718096">ح</small>
+                    <input type="number" data-idx="${i}" data-field="v" class="score-input" value="${d.v}" onchange="updateVal(${i},'${wid}','v',this.value)"></div>
+                    <div style="text-align:center"><small style="display:block; color:#718096">س</small>
+                    <input type="number" data-idx="${i}" data-field="s" class="score-input" value="${d.s}" onchange="updateVal(${i},'${wid}','s',this.value)"></div>
                     ` : ''}
                 </div>
             </div>`;
@@ -203,7 +285,7 @@
         let list = [];
         if(type === 'p1') list = [0,1,2,3,4];
         else if(type === 'p2') list = [6,7,8,9,10];
-        else list = [0,1,2,3,4,6,7,8,9,10,12,13]; // الكل ماعدا الاختبارات
+        else list = [0,1,2,3,4,6,7,8,9,10,12,13]; 
 
         let t=0, v=0, s=0, c=0;
         list.forEach(i => {
@@ -254,7 +336,7 @@
                 </table>
                 <h2 style="text-align:center; margin:10px 0;">كشف رصد درجات الطالب</h2>
             </div>`;
-            
+
             let tHTML = `<table border="1" style="width:100%; border-collapse:collapse; text-align:center; font-size:9px;"><thead><tr><th>م</th><th>الاسم</th>`;
             selWids.forEach(wid => {
                 const w = WEEKS.find(x=>x.id===wid);
@@ -281,14 +363,12 @@
             await html2pdf().set({ margin:0.3, filename:`رصد_${settings.class}.pdf`, jsPDF:{orientation:'landscape'} }).from(container).save();
             container.style.display = 'none';
         } else {
-            // تصدير إكسيل مطور ببيانات كاملة
             const wsData = [
                 [`إدارة: ${settings.dept}`, "", `المدرسة: ${settings.school}`, "", `المعلم: ${settings.teacher}`],
                 [`المادة: ${settings.subject}`, "", `الصف: ${settings.grade}`, "", `الفصل: ${settings.class}`],
                 [],
                 ["م", "الاسم"]
             ];
-            // بناء رأس الجدول للإكسيل
             selWids.forEach(wid => {
                 const w = WEEKS.find(x=>x.id===wid);
                 wsData[3].push(w.n + (w.isEx ? "" : " - ت"));
@@ -315,18 +395,68 @@
         }
     }
 
-    function saveData(n=false) { localStorage.setItem('mahmoud_ultra_final_v1', JSON.stringify({students, db, settings})); if(n) alert("تم حفظ البيانات بنجاح!"); }
-    function resetSystem() { if(confirm("حذف كل البيانات؟")) { localStorage.clear(); location.reload(); } }
+    function saveData(n=false) { 
+        localStorage.setItem('mahmoud_ultra_final_v1', JSON.stringify({students, db, settings})); 
+        if(n) alert("تم حفظ البيانات بنجاح!"); 
+    }
+
+    // وظيفة حفظ نسخة احتياطية مع التسمية
+    function backupJSON() {
+        const defaultName = `نسخة_رصد_${settings.class}_${new Date().toLocaleDateString('ar-EG')}`;
+        const fileName = prompt("أدخل اسماً للنسخة الاحتياطية:", defaultName);
+        if(!fileName) return;
+
+        const data = JSON.stringify({students, db, settings});
+        const blob = new Blob([data], {type: "application/json"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName + ".json";
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    // وظيفة استرجاع نسخة احتياطية
+    function importJSON(input) {
+        const file = input.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const d = JSON.parse(e.target.result);
+                if(d.students && d.db && d.settings) {
+                    students = d.students; db = d.db; settings = d.settings;
+                    saveData();
+                    alert("تم استعادة النسخة بنجاح!");
+                    location.reload();
+                } else {
+                    alert("الملف غير صالح أو تالف.");
+                }
+            } catch(err) {
+                alert("حدث خطأ أثناء قراءة الملف.");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function resetSystem() { 
+        if(confirm("تحذير: سيتم حذف كافة البيانات نهائياً وتصفير النظام. هل أنت متأكد؟")) { 
+            localStorage.clear(); 
+            location.reload(); 
+        } 
+    }
+
     window.onload = () => {
         const saved = localStorage.getItem('mahmoud_ultra_final_v1');
         if(saved) {
-            const d = JSON.parse(saved); students = d.students; db = d.db; settings = d.settings;
-            document.getElementById('deptName').value = settings.dept;
-            document.getElementById('schoolName').value = settings.school;
-            document.getElementById('subjectName').value = settings.subject;
-            document.getElementById('gradeLevel').value = settings.grade;
-            document.getElementById('classRoom').value = settings.class;
-            document.getElementById('teacherName').value = settings.teacher;
+            const d = JSON.parse(saved); 
+            students = d.students; db = d.db; settings = d.settings;
+            document.getElementById('deptName').value = settings.dept || '';
+            document.getElementById('schoolName').value = settings.school || '';
+            document.getElementById('subjectName').value = settings.subject || '';
+            document.getElementById('gradeLevel').value = settings.grade || '';
+            document.getElementById('classRoom').value = settings.class || '';
+            document.getElementById('teacherName').value = settings.teacher || '';
             document.getElementById('namesArea').value = students.join('\n');
             initializeSystem();
         }
